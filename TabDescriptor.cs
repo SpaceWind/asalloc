@@ -30,6 +30,7 @@ namespace ASAlloc
         }
 
         public QueryResult qr;
+        public QueryResult qr1;
         public bool isTabEditable;
         public StringDictionary columnNameParser;
         public List<columnParserDescriptor> columnParsers;
