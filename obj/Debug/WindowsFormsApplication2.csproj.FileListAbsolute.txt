@@ -1,0 +1,16 @@
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.csprojResolveAssemblyReference.cache
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.csproj.GenerateResource.Cache
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.adminMainForm.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.mainForm.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.Authorisation.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.addEditUserForm.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.facultyMainForm.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.prorectorMainForm.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.ChooseBenefitForm.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\WindowsFormsApplication2.newStudentForm.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\bin\Debug\asAlloc.exe.config
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\bin\Debug\ASAlloc.exe
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\bin\Debug\ASAlloc.pdb
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\ASAlloc.Properties.Resources.resources
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\ASAlloc.exe
+D:\visual studio 2012\Projects\WindowsFormsApplication2\WindowsFormsApplication2\obj\Debug\ASAlloc.pdb
