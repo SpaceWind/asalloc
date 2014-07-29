@@ -201,6 +201,33 @@ namespace ASAlloc
             }
             else dgv.Rows.Clear();
         }
+        public void fromDataGridView(DataGridView dgv, bool onlySelected, bool clearResult)
+        {
+            if (clearResult)
+                rows.Clear();
+            var dgvRows = dgv.Rows;
+            var selRows = dgv.SelectedRows;
+            if (onlySelected)
+            {
+                for (int i = 0; i < selRows.Count; i++)
+                {
+                    OrderedDictionary newRow = new OrderedDictionary();
+                    for (int j = 0; j < dgv.Columns.Count; j++)
+                        newRow[dgv.Columns[j].Name] = selRows[i].Cells[j].Value.ToString();
+                    rows.Add(newRow);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < dgvRows.Count; i++)
+                {
+                    OrderedDictionary newRow = new OrderedDictionary();
+                    for (int j = 0; j < dgv.Columns.Count; j++)
+                        newRow[dgv.Columns[j].Name] = dgvRows[i].Cells[j].Value.ToString();
+                    rows.Add(newRow);
+                }
+            }
+        }
         ///private methods
         ///
         bool isRowInRange(int i)

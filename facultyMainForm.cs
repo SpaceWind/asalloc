@@ -445,6 +445,12 @@ namespace ASAlloc
         }
         private void deleteStudentButton_Click(object sender, EventArgs e)
         {
+            AddStudent dlg = new AddStudent();
+            dlg.ShowDialog();
+            QueryResult qr = dlg.getResult();
+            createNewTab(tabControl1, "Новый список", qr, true, new StringDictionary());
+            currentStudentList.Rows.Clear();
+            qr.addToDataGridView(currentStudentList);
 
         }
         private void currentStudentList_CellMouseRClick(object sender, DataGridViewCellMouseEventArgs e)

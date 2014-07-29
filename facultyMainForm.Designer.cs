@@ -188,7 +188,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1009, 550);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1012, 550);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // toolStrip1
@@ -198,7 +198,7 @@
             this.toolStripButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1009, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1012, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -231,7 +231,7 @@
             this.tabControl1.Location = new System.Drawing.Point(3, 28);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1003, 19);
+            this.tabControl1.Size = new System.Drawing.Size(1006, 19);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabCtrlFaculty_DrawItem);
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
@@ -248,7 +248,7 @@
             this.currentStudentList.Name = "currentStudentList";
             this.currentStudentList.ReadOnly = true;
             this.currentStudentList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.currentStudentList.Size = new System.Drawing.Size(1003, 494);
+            this.currentStudentList.Size = new System.Drawing.Size(1006, 494);
             this.currentStudentList.TabIndex = 2;
             this.currentStudentList.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.currentStudentList_CellMouseRClick);
             // 

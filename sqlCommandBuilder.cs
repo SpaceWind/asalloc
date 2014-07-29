@@ -418,29 +418,6 @@ namespace ASAlloc
         }
         private string login;
     }
-    class SetBenefitStateCommand : SqlCommandBuilder
-    {
-        public SetBenefitStateCommand(string desc_, bool enabled_, SqlConnection connection)
-        {
-            desc = desc_;
-            enabled = enabled_;
-            conn = connection;
-        }
-        override public SqlCommand buildCommand()
-        { 
-            string sql = "UPDATE Primary_Benefit SET enabled = @val1 " +
-                               "WHERE description = @desc";
-            SqlCommand cmd = new SqlCommand();
-
-            cmd.Connection = conn;
-            cmd.CommandText = sql;
-            cmd.Parameters.Add("@val1", SqlDbType.Bit).Value = enabled;
-            cmd.Parameters.Add("@desc", SqlDbType.NVarChar).Value = desc;
-            return cmd;
-        }
-        private string desc;
-        private bool enabled;
-    }
     class SetBenefitValueCommand : SqlCommandBuilder
     {
         public SetBenefitValueCommand(string desc_, int value_, SqlConnection connection)
@@ -463,6 +440,29 @@ namespace ASAlloc
         }
         private string desc;
         private int value;
+    }
+    class SetBenefitStateCommand : SqlCommandBuilder
+    {
+        public SetBenefitStateCommand(string desc_, bool enabled_, SqlConnection connection)
+        {
+            desc = desc_;
+            enabled = enabled_;
+            conn = connection;
+        }
+        override public SqlCommand buildCommand()
+        { 
+            string sql = "UPDATE Primary_Benefit SET enabled = @val1 " +
+                               "WHERE description = @desc";
+            SqlCommand cmd = new SqlCommand();
+
+            cmd.Connection = conn;
+            cmd.CommandText = sql;
+            cmd.Parameters.Add("@val1", SqlDbType.Bit).Value = enabled;
+            cmd.Parameters.Add("@desc", SqlDbType.NVarChar).Value = desc;
+            return cmd;
+        }
+        private string desc;
+        private bool enabled;
     }
     class GetFacultyStudentsCommand : SqlCommandBuilder
     {
@@ -519,5 +519,32 @@ namespace ASAlloc
         }
         private string rBook_;
         private List<Object> benefits_;
+    }
+    class SelectStudentCommand : SqlCommandBuilder
+    {
+        public SelectStudentCommand(string faculty, string gender, List<int> yos, string isHavePlace, SqlConnection connection)
+        {
+            faculty_ = faculty;
+            gender_ = gender;
+            yos_ = yos;
+            isHavePlace_ = isHavePlace;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string yosList = "(";
+            foreach(int i in yos_)
+                yosList += i.ToString() + ",";
+            yosList = yosList.Substring(0,yosList.Length-1)+")";
+            string sql = "SELECT name, rbook, gender, faculty, yos, place, accomm_range, budget FROM Student WHERE faculty = '" + faculty_ + "'"
+                + ((gender_ !="")?" AND gender = '"+gender_+"' ":"")
+                + ((isHavePlace_ !="")?((isHavePlace_ == "True")?" AND place IS NOT NULL ":" AND place IS NULL "):"")
+                + ((yos_.Count!=0)?" AND yos IN "+yosList+" ":"");
+            return new SqlCommand(sql, conn);
+        }
+        private string faculty_, gender_;
+        List<int> yos_;
+        string isHavePlace_;
+
     }
 }
