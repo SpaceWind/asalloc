@@ -463,6 +463,40 @@ namespace ASAlloc
                 contxtTabMenu1.Show(Cursor.Position);
             }
         }  
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            if (currentStudentList.RowCount == 0)
+            {
+                MessageBox.Show("Сохранение пустого списка запрещено!", "Список пуст", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            listNameDialog lnd = new listNameDialog();
+            lnd.StartPosition = FormStartPosition.CenterParent;
+            var result = lnd.ShowDialog();
+            if(result == System.Windows.Forms.DialogResult.OK)
+            {
+                SqlConnection objConn = mainForm.createDBConnection();
+                QueryResult qr = SqlCommandBuilder.getQueryResult(new GetListIDCommand(lnd.listName, objConn).buildCommand());
+
+                if (qr.getRowCount() != 0)
+                {
+                    var mbResult = MessageBox.Show("Заменить существующий список?", "Список существует", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    if (mbResult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        objConn.Close();
+                        return;
+                    }
+                    new RemoveListCommand(Convert.ToInt32(qr.getValue(0,0)), objConn).buildCommand().ExecuteNonQuery();
+                }
+                List<string> rBooksEnum = new List<string>();
+                for (int i = 0; i < currentStudentList.RowCount - 1; i++)
+                    rBooksEnum.Add(currentStudentList.Rows[i].Cells[1].Value.ToString().Trim());
+
+                new AddListCommand(false, DateTime.Now, lnd.listName, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
+                objConn.Close();
+                MessageBox.Show("Список сохранён");
+            }
+        }
         private void deleteStudent_Click(object sender, EventArgs e)
         {
           //

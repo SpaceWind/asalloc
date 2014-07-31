@@ -547,4 +547,69 @@ namespace ASAlloc
         string isHavePlace_;
 
     }
+    class GetListIDCommand : SqlCommandBuilder
+    {
+        public GetListIDCommand(string description, SqlConnection connection)
+        {
+            desc_ = description;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "SELECT id FROM Lists WHERE description = '" + desc_ + "'";
+            return new SqlCommand(sql, conn);
+        }
+        private string desc_;
+    }
+    class RemoveListCommand : SqlCommandBuilder
+    {
+        public RemoveListCommand(int ID, SqlConnection connection)
+        {
+            id = ID;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {   
+            new SqlCommand("DELETE FROM RT_Student_Lists WHERE idList = " + id, conn).ExecuteNonQuery();
+            string sql = "DELETE FROM Lists WHERE id = " + id;
+            return new SqlCommand(sql, conn);
+        }
+        private int id;
+    }
+    class AddListCommand : SqlCommandBuilder
+    {
+        public AddListCommand(bool type, DateTime date, string description, List<string> rBooksEnum, SqlConnection connection)
+        {
+            type_ = type;
+            date_ = date.Year.ToString() + "-" + date.Month.ToString() + "-" + date.Day.ToString() + " " +
+                    date.Hour.ToString() + ":" + date.Minute.ToString() + ":" + date.Second.ToString();
+            desc_ = description;
+            rBooksEnum_ = rBooksEnum;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "INSERT INTO Lists (type, date, author, description) VALUES (" + ((type_) ? "'True', " : "'False', ") + "CONVERT (smalldatetime, '" + date_ + "',120), '" +
+                         mainForm.name + "', '" + desc_ + "')";
+            new SqlCommand(sql, conn).ExecuteNonQuery();
+            int listID = Convert.ToInt32(SqlCommandBuilder.getQueryResult(new GetListIDCommand(desc_, conn).buildCommand()).getValue(0,0));
+            string rBooks = "";
+            foreach (string currentStr in rBooksEnum_)
+                rBooks += "'" + currentStr + "', ";
+            rBooks = rBooks.Substring(0, rBooks.Length - 2);
+            sql = "SELECT id FROM Student WHERE rbook in (" + rBooks + ")";
+            QueryResult qr = SqlCommandBuilder.getQueryResult(new SqlCommand(sql, conn));
+            string values = "";
+            for (int i = 0; i < qr.getRowCount(); i++)
+                values += qr.getValue(i, 0) + ", " + listID + "), (";
+            values = values.Substring(0, values.Length - 4);
+            sql = "INSERT INTO RT_Student_Lists (student, idList) VALUES (" + values + ")";
+
+            return new SqlCommand(sql, conn);
+        }        
+        private bool type_;
+        private string date_;
+        private string desc_;
+        private List<string> rBooksEnum_;
+    }
 }

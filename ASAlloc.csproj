@@ -96,6 +96,12 @@
     <Compile Include="facultyMainForm.Designer.cs">
       <DependentUpon>facultyMainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="listNameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="listNameDialog.Designer.cs">
+      <DependentUpon>listNameDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="mainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,6 +144,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="facultyMainForm.resx">
       <DependentUpon>facultyMainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="listNameDialog.resx">
+      <DependentUpon>listNameDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mainForm.resx">
       <DependentUpon>mainForm.cs</DependentUpon>

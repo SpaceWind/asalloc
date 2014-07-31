@@ -15,3 +15,4 @@ D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.newStudentForm.resource
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.prorectorMainForm.resources
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.csprojResolveAssemblyReference.cache
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.AddStudent.resources
+D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.listNameDialog.resources
