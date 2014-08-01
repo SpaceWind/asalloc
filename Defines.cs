@@ -5,37 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-
-/*
- 
-
-
-
-
-
-void Defines::RemoveFromList(QString keyList, QString data)
-{
-        QStringList s = GetList(keyList);
-        if (s.isEmpty())
-                return;
-        int i=s.indexOf(data);
-        if (i>=0)
-                s.removeAt(i);
-        SetList(keyList,s);
-}
-
-//---------------------------------------------------------------------------
-
-
-
- * */
 namespace ASAlloc
 {
     class Defines
     {
-        //
         List<string> l = new List<string>();
-        //
         public Defines(string filename)
         {
             using (StreamReader sr = new StreamReader("config.txt"))
@@ -199,14 +173,5 @@ namespace ASAlloc
                 s.RemoveAt(i);
             setList(key, s);
         }
-
-
-
-
-
-
-
-
-
     }
 }

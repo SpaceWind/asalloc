@@ -1,5 +1,5 @@
 @servers
-(local\ASALLOC)
+(local)\ASALLOC
 tcp:10.62.222.193,49172
 /servers
 
