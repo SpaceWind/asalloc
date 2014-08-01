@@ -90,6 +90,7 @@
     <Compile Include="ChooseBenefitForm.Designer.cs">
       <DependentUpon>ChooseBenefitForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Defines.cs" />
     <Compile Include="facultyMainForm.cs">
       <SubType>Form</SubType>
     </Compile>

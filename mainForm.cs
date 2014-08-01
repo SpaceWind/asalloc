@@ -108,14 +108,18 @@ namespace ASAlloc
 
         private void mainForm_Activated(object sender, EventArgs e)
         {
-            this.Hide();
-            //Authorisation authForm = new Authorisation();
-            //authForm.Show();
-            //authForm.Controls.Find("txtLogin", false).ElementAt(0).Focus();
-            colNames = new Dictionary<string,StringDictionary>();
+            Defines config = new Defines("config.txt");
+            dataSources = config.getList("servers");
+            securityParams = config.getList("securityMode");
+            initCatalog = config.get("initCatalog");
+
+            var serverNames = config.getList("serverNames");
+            foreach (string s in serverNames)
+                comboBox1.Items.Add(s);
+            comboBox1.Text = serverNames.First();
+            colNames = new Dictionary<string, StringDictionary>();
             setupColNamesDictionary();
-            facultyMainForm fmf = new facultyMainForm();
-            fmf.Show();
+
         }
 
         static public int role = 0;
@@ -126,5 +130,35 @@ namespace ASAlloc
 
         public static Dictionary<string, StringDictionary> colNames //= new Dictionary<string, StringDictionary>()
         {get; private set;}
+        private List<string> dataSources = new List<string>();
+        private List<string> securityParams = new List<string>();
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selIndex = ((ComboBox)sender).SelectedIndex;
+            dataSource = dataSources.ElementAt(selIndex);
+            string secMode = securityParams.ElementAt(selIndex).ToLower();
+            if (secMode == "integrated")
+                secMode = "Integrated Security=SSPI;";
+            else if (secMode == "normal")
+                secMode = "UID=PSA;PWD=123;";
+            securityMode = secMode; 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Authorisation authForm = new Authorisation();
+            authForm.Show();
+            authForm.Controls.Find("txtLogin", false).ElementAt(0).Focus();
+
+            //facultyMainForm fmf = new facultyMainForm();
+            //fmf.Show();
+        }
     }
 }

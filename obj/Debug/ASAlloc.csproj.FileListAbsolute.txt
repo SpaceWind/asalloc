@@ -16,3 +16,21 @@ D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.prorectorMainForm.resou
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.csprojResolveAssemblyReference.cache
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.AddStudent.resources
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.listNameDialog.resources
+c:\asalloc\project\bin\Debug\ASAlloc.exe.config
+c:\asalloc\project\obj\Debug\ASAlloc.exe
+c:\asalloc\project\obj\Debug\ASAlloc.pdb
+c:\asalloc\project\obj\Debug\ASAlloc.csprojResolveAssemblyReference.cache
+c:\asalloc\project\obj\Debug\ASAlloc.addEditUserForm.resources
+c:\asalloc\project\obj\Debug\ASAlloc.AddStudent.resources
+c:\asalloc\project\obj\Debug\ASAlloc.adminMainForm.resources
+c:\asalloc\project\obj\Debug\ASAlloc.Authorisation.resources
+c:\asalloc\project\obj\Debug\ASAlloc.ChooseBenefitForm.resources
+c:\asalloc\project\obj\Debug\ASAlloc.facultyMainForm.resources
+c:\asalloc\project\obj\Debug\ASAlloc.listNameDialog.resources
+c:\asalloc\project\obj\Debug\ASAlloc.mainForm.resources
+c:\asalloc\project\obj\Debug\ASAlloc.newStudentForm.resources
+c:\asalloc\project\obj\Debug\ASAlloc.Properties.Resources.resources
+c:\asalloc\project\obj\Debug\ASAlloc.prorectorMainForm.resources
+c:\asalloc\project\obj\Debug\ASAlloc.csproj.GenerateResource.Cache
+c:\asalloc\project\bin\Debug\ASAlloc.exe
+c:\asalloc\project\bin\Debug\ASAlloc.pdb
