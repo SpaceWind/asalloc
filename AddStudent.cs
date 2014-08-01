@@ -169,6 +169,15 @@ namespace ASAlloc
         {
             return result;
         }
+        public void setResult(QueryResult qr)
+        {
+            result = qr;
+        }
         private QueryResult result = new QueryResult();
+
+        private void AddStudent_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            result.removeDuplicates();
+        }
     }
 }

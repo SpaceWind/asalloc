@@ -295,6 +295,7 @@
             this.Name = "AddStudent";
             this.Text = "AddStudent";
             this.Activated += new System.EventHandler(this.AddStudent_Activated);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AddStudent_FormClosed);
             this.Enter += new System.EventHandler(this.AddStudent_Enter);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

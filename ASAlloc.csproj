@@ -203,6 +203,42 @@
   <ItemGroup>
     <None Include="Resources\1398002740518.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\removeFromList.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\removeFromList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\price-list-icon-76.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\list_add_user.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\top-authors-list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save-as-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\System-Save-as-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\close-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\index.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rename.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -547,6 +547,21 @@ namespace ASAlloc
         string isHavePlace_;
 
     }
+    class RenameListCommand : SqlCommandBuilder
+    {
+        public RenameListCommand(string oldDescription, string newDescription, SqlConnection connection)
+        {
+            new_ = newDescription;
+            old_ = oldDescription;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "UPDATE Lists SET description='" + new_ + "' WHERE description = '" + old_ + "'";
+            return new SqlCommand(sql, conn);
+        }
+        private string old_, new_;
+    }
     class GetListIDCommand : SqlCommandBuilder
     {
         public GetListIDCommand(string description, SqlConnection connection)

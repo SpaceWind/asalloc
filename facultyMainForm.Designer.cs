@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(facultyMainForm));
             this.tabCtrlFaculty = new System.Windows.Forms.TabControl();
             this.tabStudents = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -40,7 +39,9 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.currentStudentList = new System.Windows.Forms.DataGridView();
             this.tabPlaceFund = new System.Windows.Forms.TabPage();
@@ -57,6 +58,8 @@
             this.редактироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteStudent = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.tabCtrlFaculty.SuspendLayout();
             this.tabStudents.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -181,59 +184,89 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.toolStrip1, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.tabControl1, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.currentStudentList, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.toolStrip1);
+            this.tableLayoutPanel2.Controls.Add(this.tabControl1);
+            this.tableLayoutPanel2.Controls.Add(this.currentStudentList);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(-1, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1018, 550);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1045, 550);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // toolStrip1
             // 
+            this.toolStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton2,
             this.toolStripButton3,
-            this.toolStripButton4});
+            this.toolStripButton6,
+            this.toolStripButton4,
+            this.toolStripButton7,
+            this.toolStripButton5,
+            this.toolStripButton8});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1018, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1045, 35);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // toolStripButton2
             // 
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = global::ASAlloc.Properties.Resources._1398002740518;
+            this.toolStripButton2.Image = global::ASAlloc.Properties.Resources.list_add_user;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.Size = new System.Drawing.Size(28, 32);
             this.toolStripButton2.Text = "Добавить студента";
             this.toolStripButton2.Click += new System.EventHandler(this.addStudentButton_Click);
             // 
             // toolStripButton3
             // 
             this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = global::ASAlloc.Properties.Resources.close;
+            this.toolStripButton3.Image = global::ASAlloc.Properties.Resources.price_list_icon_76;
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton3.Text = "Удалить студента";
+            this.toolStripButton3.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton3.Text = "Создать новый список студентов";
             this.toolStripButton3.Click += new System.EventHandler(this.deleteStudentButton_Click);
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton6.Image = global::ASAlloc.Properties.Resources.top_authors_list;
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton6.Text = "Добавить студентов в список";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
             // 
             // toolStripButton4
             // 
             this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.Image = global::ASAlloc.Properties.Resources.System_Save_as_icon;
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton4.Text = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton4.Text = "Сохранить приватный список как";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Enabled = false;
+            this.toolStripButton5.Image = global::ASAlloc.Properties.Resources.close_2;
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton5.Text = "Удалить список";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
             // tabControl1
             // 
@@ -241,10 +274,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.tabControl1.Location = new System.Drawing.Point(3, 28);
+            this.tabControl1.ItemSize = new System.Drawing.Size(40, 18);
+            this.tabControl1.Location = new System.Drawing.Point(3, 38);
             this.tabControl1.Name = "tabControl1";
+            this.tabControl1.Padding = new System.Drawing.Point(13, 3);
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1012, 19);
+            this.tabControl1.Size = new System.Drawing.Size(1039, 19);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabCtrlFaculty_DrawItem);
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
@@ -257,11 +292,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.currentStudentList.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.currentStudentList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.currentStudentList.Location = new System.Drawing.Point(3, 53);
+            this.currentStudentList.Location = new System.Drawing.Point(3, 63);
             this.currentStudentList.Name = "currentStudentList";
             this.currentStudentList.ReadOnly = true;
             this.currentStudentList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.currentStudentList.Size = new System.Drawing.Size(1012, 494);
+            this.currentStudentList.Size = new System.Drawing.Size(1039, 484);
             this.currentStudentList.TabIndex = 2;
             this.currentStudentList.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.currentStudentList_CellMouseRClick);
             // 
@@ -437,6 +472,26 @@
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 23);
             // 
+            // toolStripButton7
+            // 
+            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton7.Image = global::ASAlloc.Properties.Resources.save__1_;
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton7.Text = "Сохранить приватный список";
+            this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
+            // 
+            // toolStripButton8
+            // 
+            this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton8.Image = global::ASAlloc.Properties.Resources.rename;
+            this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton8.Name = "toolStripButton8";
+            this.toolStripButton8.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton8.Text = "Переименовать список";
+            this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
+            // 
             // facultyMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -502,5 +557,9 @@
         private System.Windows.Forms.ToolStripMenuItem deleteStudent;
         private System.Windows.Forms.ToolStripMenuItem редактироватьToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.ToolStripButton toolStripButton6;
+        private System.Windows.Forms.ToolStripButton toolStripButton7;
+        private System.Windows.Forms.ToolStripButton toolStripButton8;
     }
 }

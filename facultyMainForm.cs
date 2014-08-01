@@ -63,6 +63,7 @@ namespace ASAlloc
                 privateLists.Add(tempNode);
             }
             var privateNodes = new TreeNode("Личные списки",privateLists.ToArray());
+            privateNodes.ExpandAll();
             treeStudents.Nodes.Add(privateNodes);
 
             List<TreeNode> userListsNode = new List<TreeNode>();
@@ -213,12 +214,12 @@ namespace ASAlloc
                     qr = SqlCommandBuilder.getQueryResult(new SelectAllRowsByTwoColumnsCommand("Student", columnOrder, "faculty", faculty,
                                                                                                "yos", e.Node.Text.Replace("Курс ", ""),
                                                                                                objConn).buildCommand());
-                    tabText = e.Node.Parent.Text + " : " + e.Node.Text + "  ";
+                    tabText = e.Node.Parent.Text + " : " + e.Node.Text;
                 }
                 qr.parseColumn(2, mainForm.colNames["gender"]);
                 qr.parseColumn(5, "НЕТ", "ДА");
                 qr.addToDataGridView(currentStudentList, mainForm.colNames["student"]);
-                string tabName = createNewTab(tabControl1, tabText, qr, faculty == mainForm.name,mainForm.colNames["student"]);
+                string tabName = createNewTab(tabControl1, tabText, qr, faculty == mainForm.name, false, mainForm.colNames["student"]);
                 tabs[tabName].addColumnParser(2, mainForm.colNames["gender"]);
             }
             else if (studentListComboBox.Text == "Списки студентов")
@@ -229,11 +230,11 @@ namespace ASAlloc
                     {
                         currentStudentList.Rows.Clear();
                         QueryResult prList = SqlCommandBuilder.getQueryResult(new GetStudentListCommand(mainForm.name, false, e.Node.Text, objConn).buildCommand());
-                        prList.addToDataGridView(currentStudentList,mainForm.colNames["student"]);
-
-                        string tabText = e.Node.Text + "  ";
+                        string tabText = e.Node.Text;
                         prList.parseColumn(2, mainForm.colNames["gender"]);
-                        string tabName = createNewTab(tabControl1, tabText, prList,true,mainForm.colNames["student"]);
+                        prList.parseColumn(5, "НЕТ", "ДА");
+                        prList.addToDataGridView(currentStudentList, mainForm.colNames["student"]);
+                        string tabName = createNewTab(tabControl1, tabText, prList, true, true, mainForm.colNames["student"]);
                         tabs[tabName].addColumnParser(2, mainForm.colNames["gender"]);
                     }
                     else if (e.Node.Parent.Parent != null)
@@ -242,8 +243,8 @@ namespace ASAlloc
                         QueryResult pubList = SqlCommandBuilder.getQueryResult(new GetStudentListCommand(e.Node.Parent.Text, true, e.Node.Text, objConn).buildCommand());
                         pubList.addToDataGridView(currentStudentList);
 
-                        string tabText = e.Node.Text + "  ";
-                        createNewTab(tabControl1, tabText, pubList,false,mainForm.colNames["student"]);
+                        string tabText = e.Node.Text;
+                        createNewTab(tabControl1, tabText, pubList,false,false, mainForm.colNames["student"]);
                     }
                 }
 
@@ -257,19 +258,23 @@ namespace ASAlloc
                                      dt.Hour.ToString() + ":" + dt.Minute.ToString() + ":"+ dt.Second.ToString();
                     QueryResult qr = SqlCommandBuilder.getQueryResult(new GetOrderCommand(newDate, objConn).buildCommand());
                     qr.addToDataGridView(currentStudentList,mainForm.colNames["order"]);
-                    createNewTab(tabControl1, "Приказ от " + e.Node.Text.Substring(0, 10) + "  ", qr, false, mainForm.colNames["order"]);
+                    createNewTab(tabControl1, "Приказ от " + e.Node.Text.Substring(0, 10), qr, false,false, mainForm.colNames["order"]);
                 }
             }
 
             objConn.Close();
         }
 
-        private string createNewTab(TabControl ctrl, string text, QueryResult content, bool isEditable, StringDictionary parser)
+        private string createNewTab(TabControl ctrl, string text, QueryResult content, bool isEditable, bool isRemovable, StringDictionary parser)
         {
             TabPage newPage = new TabPage(text);
             string tabName = "tabPage_" + tabCounter.ToString();
             newPage.Name = tabName;
-            tabDescriptor tb = new tabDescriptor(content, isEditable, parser);
+            tabDescriptor tb = new tabDescriptor(content, isEditable, isRemovable, parser);
+            toolStripButton5.Enabled = isRemovable;
+            toolStripButton7.Enabled = isRemovable;
+            toolStripButton8.Enabled = isRemovable;
+
             tabs[tabName] = tb;
             ctrl.TabPages.Add(newPage);
             ctrl.SelectTab(tabName);
@@ -287,6 +292,17 @@ namespace ASAlloc
                 QueryResult qr = tabs[e.TabPage.Name].qr;
                 if (qr != null)
                     qr.addToDataGridView(currentStudentList,tabs[e.TabPage.Name].columnNameParser);
+                toolStripButton5.Enabled = tabs[e.TabPage.Name].isRemovable;
+                toolStripButton7.Enabled = tabs[e.TabPage.Name].isRemovable;
+                SqlConnection objConn = mainForm.createDBConnection();
+                if (new GetListIDCommand(e.TabPage.Text, objConn).buildCommand().ExecuteScalar() == null)
+                {
+                    tabs[e.TabPage.Name].isRemovable = false;
+                    toolStripButton5.Enabled = false;
+                    toolStripButton7.Enabled = false;
+                    toolStripButton8.Enabled = false;
+                }
+                objConn.Close();
             }
         }
 
@@ -333,7 +349,7 @@ namespace ASAlloc
             qr.parseColumn(1, mainForm.colNames["place_state"]);
             qr.addToDataGridView(currentPlaceList, mainForm.colNames[parserName]);
 
-            createNewTab(tabControl2, tabText, qr, mainForm.role == 2, mainForm.colNames[parserName]);
+            createNewTab(tabControl2, tabText, qr, mainForm.role == 2, mainForm.role == 2, mainForm.colNames[parserName]);
 
             objConn.Close();
         }
@@ -389,6 +405,25 @@ namespace ASAlloc
             }
         }
 
+        private void closeTab(object sender)
+        {
+            TabControl tb = (TabControl)sender;
+            tabs.Remove(tb.TabPages[tb.SelectedIndex].Name);
+            tb.TabPages.RemoveAt(tb.SelectedIndex);
+            string senderName = tb.Name;
+            if (tb.TabCount == 0)
+            {
+                if (senderName == "tabControl1")
+                    currentStudentList.Columns.Clear();
+                else if (senderName == "tabControl2")
+                    currentPlaceList.Columns.Clear();
+                toolStripButton5.Enabled = false;
+                toolStripButton7.Enabled = false;
+                toolStripButton8.Enabled = false;
+            }
+           
+        }
+
         private void tabControl1_MouseDown(object sender, MouseEventArgs e)
         {
             int selectedTab = ((TabControl)sender).SelectedIndex;
@@ -400,15 +435,8 @@ namespace ASAlloc
                 Point pt = new Point(e.X, e.Y);
                 if (tabTextArea.Contains(pt))
                 {
-                    tabs.Remove(((TabControl)sender).TabPages[((TabControl)sender).SelectedIndex].Name);
-                    ((TabControl)sender).TabPages.RemoveAt(((TabControl)sender).SelectedIndex);
                     isCurrentTabClosed = true;
-                    string senderName = ((TabControl)sender).Name;
-                    if (((TabControl)sender).TabCount == 0)
-                        if (senderName == "tabControl1")
-                            currentStudentList.Columns.Clear();
-                        else if (senderName == "tabControl2")
-                            currentPlaceList.Columns.Clear();
+                    closeTab(sender);
                 }
             }
             if (!isCurrentTabClosed)
@@ -448,7 +476,7 @@ namespace ASAlloc
             AddStudent dlg = new AddStudent();
             dlg.ShowDialog();
             QueryResult qr = dlg.getResult();
-            createNewTab(tabControl1, "Новый список", qr, true, new StringDictionary());
+            createNewTab(tabControl1, "Новый список", qr, true, false, new StringDictionary());
             currentStudentList.Rows.Clear();
             qr.addToDataGridView(currentStudentList);
 
@@ -465,7 +493,7 @@ namespace ASAlloc
         }  
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
-            if (currentStudentList.RowCount == 0)
+            if (currentStudentList.RowCount <= 1)
             {
                 MessageBox.Show("Сохранение пустого списка запрещено!", "Список пуст", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -476,7 +504,11 @@ namespace ASAlloc
             if(result == System.Windows.Forms.DialogResult.OK)
             {
                 SqlConnection objConn = mainForm.createDBConnection();
-                QueryResult qr = SqlCommandBuilder.getQueryResult(new GetListIDCommand(lnd.listName, objConn).buildCommand());
+                DateTime DT = DateTime.Now;
+                string listName = (lnd.listName.Trim() == "") ? "список " + mainForm.name + " от: " + 
+                                                                DT.Year.ToString() + "-" + DT.Month.ToString() + "-" + DT.Day.ToString() + " " +
+                                                                DT.Hour.ToString() + ":" + DT.Minute.ToString() + ":" + DT.Second.ToString() : lnd.listName;
+                QueryResult qr = SqlCommandBuilder.getQueryResult(new GetListIDCommand(listName, objConn).buildCommand());
 
                 if (qr.getRowCount() != 0)
                 {
@@ -492,20 +524,105 @@ namespace ASAlloc
                 for (int i = 0; i < currentStudentList.RowCount - 1; i++)
                     rBooksEnum.Add(currentStudentList.Rows[i].Cells[1].Value.ToString().Trim());
 
-                new AddListCommand(false, DateTime.Now, lnd.listName, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
+                new AddListCommand(false, DateTime.Now, listName, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
+                tabControl1.SelectedTab.Text = listName;
+                tabs[tabControl1.SelectedTab.Name].isRemovable = true;
+                toolStripButton5.Enabled = true;
+                toolStripButton7.Enabled = true;
+                toolStripButton8.Enabled = true;
+                setupListsNodes();
                 objConn.Close();
                 MessageBox.Show("Список сохранён");
             }
         }
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.TabPages.Count == 0)
+                return;
+            string listName = tabControl1.SelectedTab.Text;
+            SqlConnection objConn = mainForm.createDBConnection();
+            new RemoveListCommand(Convert.ToInt32((new GetListIDCommand(listName, objConn)).buildCommand().ExecuteScalar().ToString()), objConn).buildCommand().ExecuteNonQuery();
+            closeTab(tabControl1);
+            if (prevTabIndex != 0)
+            {
+                if (tabControl1.TabCount == prevTabIndex)
+                {
+                    tabControl1.SelectTab(prevTabIndex - 1);
+                    prevTabIndex -= 1;
+                }
+                else
+                    tabControl1.SelectTab(prevTabIndex);
+            }
+            setupListsNodes();
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            AddStudent dlg = new AddStudent();
+            dlg.setResult(tabs[tabControl1.SelectedTab.Name].qr);
+            dlg.ShowDialog();
+            tabs[tabControl1.SelectedTab.Name].qr = dlg.getResult();
+            currentStudentList.Rows.Clear();
+            dlg.getResult().addToDataGridView(currentStudentList);
+        }
+
+        private void toolStripButton7_Click(object sender, EventArgs e)
+        {
+            if (currentStudentList.RowCount <= 1)
+            {
+                MessageBox.Show("Сохранение пустого списка запрещено!", "Список пуст", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            SqlConnection objConn = mainForm.createDBConnection();
+            string listName = currentTabText();
+            
+            new RemoveListCommand(Convert.ToInt32(new GetListIDCommand(listName,objConn).buildCommand().ExecuteScalar().ToString()), objConn).buildCommand().ExecuteNonQuery();
+            List<string> rBooksEnum = new List<string>();
+            for (int i = 0; i < currentStudentList.RowCount - 1; i++)
+                rBooksEnum.Add(currentStudentList.Rows[i].Cells[1].Value.ToString().Trim());
+
+            new AddListCommand(false, DateTime.Now, listName, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
+            tabs[tabControl1.SelectedTab.Name].isRemovable = true;
+            toolStripButton5.Enabled = true;
+            setupListsNodes();
+            objConn.Close();
+            MessageBox.Show("Список сохранён");
+        }    
+        private string currentTabText()
+        {
+            return tabControl1.SelectedTab.Text;
+        }
         private void deleteStudent_Click(object sender, EventArgs e)
         {
-          //
+            foreach (DataGridViewRow dr in currentStudentList.SelectedRows)
+                currentStudentList.Rows.Remove(dr);
+            tabs[tabControl1.SelectedTab.Name].qr.fromDataGridView(currentStudentList, false, true);
         } 
         /// <summary>
         /// ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
         private int prevTabIndex = -1;
         static private int tabCounter = 0;
-        private Dictionary<string, tabDescriptor> tabs = new Dictionary<string, tabDescriptor>();     
+        private Dictionary<string, tabDescriptor> tabs = new Dictionary<string, tabDescriptor>();
+
+        private void toolStripButton8_Click(object sender, EventArgs e)
+        {
+            listNameDialog dlg = new listNameDialog();
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            var result = dlg.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+                return;
+            SqlConnection objConn = mainForm.createDBConnection();
+            DateTime DT = DateTime.Now;
+            string listName = (dlg.listName.Trim() == "") ? "список " + mainForm.name + " от: " +
+                                                            DT.Year.ToString() + "-" + DT.Month.ToString() + "-" + DT.Day.ToString() + " " +
+                                                            DT.Hour.ToString() + ":" + DT.Minute.ToString() + ":" + DT.Second.ToString() : dlg.listName;
+            new RenameListCommand(currentTabText(), listName, objConn).buildCommand().ExecuteNonQuery();
+            tabControl1.SelectedTab.Text = listName;
+            setupListsNodes();
+
+        }
+ 
     }
 }

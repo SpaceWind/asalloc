@@ -14,12 +14,13 @@ namespace ASAlloc
             public int index;
             public StringDictionary parser;
         }
-        public tabDescriptor(QueryResult queryResult, bool isTabEditable_, StringDictionary nameParser)
+        public tabDescriptor(QueryResult queryResult, bool isTabEditable_, bool isTabRemovable, StringDictionary nameParser)
         {
             columnParsers = new List<columnParserDescriptor>();
             qr = queryResult;
             isTabEditable = isTabEditable_;
             columnNameParser = nameParser;
+            isRemovable = isTabRemovable;
         }
         public void addColumnParser(int index, StringDictionary parser)
         {
@@ -28,9 +29,9 @@ namespace ASAlloc
             cpd.parser = parser;
             columnParsers.Add(cpd);
         }
-
         public QueryResult qr;
         public bool isTabEditable;
+        public bool isRemovable;
         public StringDictionary columnNameParser;
         public List<columnParserDescriptor> columnParsers;
 

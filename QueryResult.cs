@@ -219,11 +219,14 @@ namespace ASAlloc
             }
             else
             {
-                for (int i = 0; i < dgvRows.Count; i++)
+                for (int i = 0; i < dgvRows.Count-1; i++)
                 {
                     OrderedDictionary newRow = new OrderedDictionary();
                     for (int j = 0; j < dgv.Columns.Count; j++)
-                        newRow[dgv.Columns[j].Name] = dgvRows[i].Cells[j].Value.ToString();
+                    {
+                        string cellValue = (dgvRows[i].Cells[j].Value == null) ? null : dgvRows[i].Cells[j].Value.ToString();
+                        newRow[dgv.Columns[j].Name] = cellValue;
+                    }
                     rows.Add(newRow);
                 }
             }
@@ -241,6 +244,37 @@ namespace ASAlloc
             if (column>=0 && column < rows[row].Count)
                 return true;
             return false;
+        }
+        public bool rowsEquals(OrderedDictionary firstRow, OrderedDictionary secondRow)
+        {
+            string[] values = new string[firstRow.Values.Count];
+            string[] keys = new string[firstRow.Keys.Count];
+            firstRow.Keys.CopyTo(keys, 0);
+            firstRow.Values.CopyTo(values, 0);
+            string[] secondValues = new string[secondRow.Values.Count];
+            string[] secondKeys = new string[secondRow.Keys.Count];
+            secondRow.Keys.CopyTo(secondKeys, 0);
+            secondRow.Values.CopyTo(secondValues, 0);
+            if ((values.Count() != secondValues.Count()) || (keys.Count() != secondKeys.Count()))
+                return false;
+            for (int i = 0; i < values.Count(); i++)
+                if ((values[i] != secondValues[i]) || (keys[i] != secondKeys[i]))
+                    return false;
+            return true;
+        }
+        public void removeDuplicates()
+        {
+            for (int iRow = 0; iRow < getRowCount()-1; iRow++)
+            {
+                for (int cRow = iRow + 1; cRow < getRowCount(); cRow++)
+                {
+                    if (rowsEquals(rows[iRow], rows[cRow]))
+                    {
+                        rows.RemoveAt(cRow);
+                        cRow--;
+                    }
+                }
+            }
         }
 
         ///private values
