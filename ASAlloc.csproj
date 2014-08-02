@@ -66,6 +66,12 @@
     <Compile Include="addEditUserForm.Designer.cs">
       <DependentUpon>addEditUserForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddServerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddServerForm.Designer.cs">
+      <DependentUpon>AddServerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="AddStudent.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,6 +136,9 @@
     <Compile Include="TabDescriptor.cs" />
     <EmbeddedResource Include="addEditUserForm.resx">
       <DependentUpon>addEditUserForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddServerForm.resx">
+      <DependentUpon>AddServerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AddStudent.resx">
       <DependentUpon>AddStudent.cs</DependentUpon>

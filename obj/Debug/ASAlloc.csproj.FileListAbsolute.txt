@@ -34,3 +34,4 @@ c:\asalloc\project\obj\Debug\ASAlloc.prorectorMainForm.resources
 c:\asalloc\project\obj\Debug\ASAlloc.csproj.GenerateResource.Cache
 c:\asalloc\project\bin\Debug\ASAlloc.exe
 c:\asalloc\project\bin\Debug\ASAlloc.pdb
+c:\asalloc\project\obj\Debug\ASAlloc.AddServerForm.resources

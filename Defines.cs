@@ -102,7 +102,7 @@ namespace ASAlloc
         public void setList(string key, List<string> data)
         {
             clearList(key);
-            addToList(key, "");
+           // addToList(key, "");
             int index = l.IndexOf("@" + key) + 1;
             foreach (string s in data)
             {
@@ -151,23 +151,33 @@ namespace ASAlloc
         {
             int iStart = l.IndexOf("@" + key)+1;
             int iStop = l.IndexOf("/" + key)-1;
+            if (iStart > iStop)
+                return;
             for (int i = iStart; i <= iStop; i++)
                 l.RemoveAt(iStart);
         }
+        public bool listExist(string key)
+        {
+            int iStart = l.IndexOf("@" + key);
+            int iStop = l.IndexOf("/" + key);
+            if (iStart != -1 && iStop != -1 && iStart < iStop)
+                return true;
+            return false;
+        }
         public bool addToList(string key, string data)
         {
-            List<string> s = getList(key);
-            if (s.Count == 0)
+            if (!listExist(key))
                 return false;
+            var s = getList(key);
             s.Add(data);
             setList(key, s);
             return true;
         }
         public void removeFromList(string key, string data)
         {
-            var s = getList(key);
-            if (s.Count == 0)
+            if (!listExist(key))
                 return;
+            var s = getList(key);
             int i = s.IndexOf(data);
             if (i >= 0)
                 s.RemoveAt(i);

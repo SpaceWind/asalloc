@@ -1,17 +1,31 @@
 @servers
-(local)\ASALLOC
 tcp:10.62.222.193,49172
+(ASALLOC)localhost
 /servers
 
 @securityMode
-Integrated
 Normal
+Integrated
 /securityMode
 
 @serverNames
-localhost
-Phoenix Main PC
+PHOENIX PC (Debug:ФИТ)
+local
 /serverNames
 
 #initCatalog
 Initial Catalog=PSA_base;
+
+@DebugMode
+faculty
+faculty
+/DebugMode
+
+@DebugLogin
+ФИТ
+ФИТ
+/DebugLogin
+
+#lastserver
+
+
