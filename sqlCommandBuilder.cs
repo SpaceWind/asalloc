@@ -104,6 +104,43 @@ namespace ASAlloc
         }
         private string date_;
     }
+    class GetPublicListCommand : SqlCommandBuilder
+    {
+        public GetPublicListCommand(string description, string author, SqlConnection connection)
+        {
+            desc_ = description;
+            author_ = author;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join RT_Student_Lists on RT_Student_Lists.student = Student.id " +
+                         "full join Room on Room.id = (select room from Place where id = RT_Student_Lists.place) " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.id in (select RT_Student_Lists.student from RT_Student_Lists where RT_Student_Lists.idList = " +
+                         "(select id from Lists where description = '" + desc_ + "' and author = '" + author_ + "'))";
+            return new SqlCommand(sql, conn);
+        }
+        private string desc_, author_;
+    }
+    class GetResidentsListCommand : SqlCommandBuilder
+    {
+        public GetResidentsListCommand(bool all, SqlConnection connection)
+        {
+            all_ = all;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join Room on Room.id = (select room from Place where id = Student.place) " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.place is not Null" + (all_ ? "" : " and Student.faculty = '" + mainForm.name + "'");
+            return new SqlCommand(sql, conn);
+        }
+        private bool all_;
+    }
     class GetAllUsersExceptAdminCommand : SqlCommandBuilder
     {
         public GetAllUsersExceptAdminCommand(SqlConnection connection)
@@ -626,5 +663,22 @@ namespace ASAlloc
         private string date_;
         private string desc_;
         private List<string> rBooksEnum_;
+    }
+    class LinkExistenceCheckCommand : SqlCommandBuilder
+    {
+        public LinkExistenceCheckCommand(string fromTable, string columnName, string value, SqlConnection connection)
+        {
+            fromTable_ = fromTable;
+            columnName_ = columnName;
+            value_ = value;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "SELECT id FROM " + fromTable_ + " WHERE " + columnName_ + " = '" + value_ + "'";
+
+            return new SqlCommand(sql, conn);
+        }
+        private string fromTable_, columnName_, value_;
     }
 }

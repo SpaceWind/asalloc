@@ -16,6 +16,11 @@ namespace ASAlloc
         {
             InitializeComponent();
         }
+        public listNameDialog(string text)
+        {
+            InitializeComponent();
+            textBox1.Text = text;
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {            

@@ -63,19 +63,9 @@ namespace ASAlloc.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap _1398002740518 {
+        internal static System.Drawing.Bitmap certificate {
             get {
-                object obj = ResourceManager.GetObject("_1398002740518", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap close {
-            get {
-                object obj = ResourceManager.GetObject("close", resourceCulture);
+                object obj = ResourceManager.GetObject("certificate", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +83,19 @@ namespace ASAlloc.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap index {
+        internal static System.Drawing.Bitmap exile {
             get {
-                object obj = ResourceManager.GetObject("index", resourceCulture);
+                object obj = ResourceManager.GetObject("exile", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap home {
+            get {
+                object obj = ResourceManager.GetObject("home", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -196,6 +196,16 @@ namespace ASAlloc.Properties {
         internal static System.Drawing.Bitmap top_authors_list {
             get {
                 object obj = ResourceManager.GetObject("top_authors_list", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap violation {
+            get {
+                object obj = ResourceManager.GetObject("violation", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

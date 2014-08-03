@@ -41,7 +41,16 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.плановоеЗаселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.внеплановоеЗаселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.плановоеВыселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.внеплановоеВыселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.currentStudentList = new System.Windows.Forms.DataGridView();
             this.tabPlaceFund = new System.Windows.Forms.TabPage();
@@ -58,8 +67,9 @@
             this.редактироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteStudent = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
             this.tabCtrlFaculty.SuspendLayout();
             this.tabStudents.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -193,7 +203,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1045, 550);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1066, 550);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // toolStrip1
@@ -205,15 +215,21 @@
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton2,
+            this.toolStripSeparator1,
             this.toolStripButton3,
             this.toolStripButton6,
             this.toolStripButton4,
             this.toolStripButton7,
             this.toolStripButton5,
-            this.toolStripButton8});
+            this.toolStripButton8,
+            this.toolStripSeparator2,
+            this.toolStripDropDownButton1,
+            this.toolStripDropDownButton2,
+            this.toolStripButton9,
+            this.toolStripButton10});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1045, 35);
+            this.toolStrip1.Size = new System.Drawing.Size(1066, 35);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -235,7 +251,7 @@
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(28, 32);
             this.toolStripButton3.Text = "Создать новый список студентов";
-            this.toolStripButton3.Click += new System.EventHandler(this.deleteStudentButton_Click);
+            this.toolStripButton3.Click += new System.EventHandler(this.addNewListButton_Click);
             // 
             // toolStripButton6
             // 
@@ -257,6 +273,16 @@
             this.toolStripButton4.Text = "Сохранить приватный список как";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
+            // toolStripButton7
+            // 
+            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton7.Image = global::ASAlloc.Properties.Resources.save__1_;
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton7.Text = "Сохранить приватный список";
+            this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
+            // 
             // toolStripButton5
             // 
             this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -268,6 +294,74 @@
             this.toolStripButton5.Text = "Удалить список";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
+            // toolStripButton8
+            // 
+            this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton8.Image = global::ASAlloc.Properties.Resources.rename;
+            this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton8.Name = "toolStripButton8";
+            this.toolStripButton8.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton8.Text = "Переименовать список";
+            this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
+            // 
+            // toolStripDropDownButton1
+            // 
+            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.плановоеЗаселениеToolStripMenuItem,
+            this.внеплановоеЗаселениеToolStripMenuItem});
+            this.toolStripDropDownButton1.Image = global::ASAlloc.Properties.Resources.home;
+            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(37, 32);
+            this.toolStripDropDownButton1.Text = "Заселение";
+            // 
+            // плановоеЗаселениеToolStripMenuItem
+            // 
+            this.плановоеЗаселениеToolStripMenuItem.Name = "плановоеЗаселениеToolStripMenuItem";
+            this.плановоеЗаселениеToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.плановоеЗаселениеToolStripMenuItem.Text = "Плановое заселение";
+            // 
+            // внеплановоеЗаселениеToolStripMenuItem
+            // 
+            this.внеплановоеЗаселениеToolStripMenuItem.Name = "внеплановоеЗаселениеToolStripMenuItem";
+            this.внеплановоеЗаселениеToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.внеплановоеЗаселениеToolStripMenuItem.Text = "Внеплановое заселение";
+            // 
+            // toolStripDropDownButton2
+            // 
+            this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.плановоеВыселениеToolStripMenuItem,
+            this.внеплановоеВыселениеToolStripMenuItem});
+            this.toolStripDropDownButton2.Image = global::ASAlloc.Properties.Resources.exile;
+            this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
+            this.toolStripDropDownButton2.Size = new System.Drawing.Size(37, 32);
+            this.toolStripDropDownButton2.Text = "Выселение";
+            // 
+            // плановоеВыселениеToolStripMenuItem
+            // 
+            this.плановоеВыселениеToolStripMenuItem.Name = "плановоеВыселениеToolStripMenuItem";
+            this.плановоеВыселениеToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.плановоеВыселениеToolStripMenuItem.Text = "Плановое выселение";
+            this.плановоеВыселениеToolStripMenuItem.Click += new System.EventHandler(this.плановоеВыселениеToolStripMenuItem_Click);
+            // 
+            // внеплановоеВыселениеToolStripMenuItem
+            // 
+            this.внеплановоеВыселениеToolStripMenuItem.Name = "внеплановоеВыселениеToolStripMenuItem";
+            this.внеплановоеВыселениеToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.внеплановоеВыселениеToolStripMenuItem.Text = "Внеплановое выселение";
+            // 
+            // toolStripButton9
+            // 
+            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton9.Image = global::ASAlloc.Properties.Resources.violation;
+            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton9.Name = "toolStripButton9";
+            this.toolStripButton9.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton9.Text = "Добавить нарушение";
+            // 
             // tabControl1
             // 
             this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -277,9 +371,9 @@
             this.tabControl1.ItemSize = new System.Drawing.Size(40, 18);
             this.tabControl1.Location = new System.Drawing.Point(3, 38);
             this.tabControl1.Name = "tabControl1";
-            this.tabControl1.Padding = new System.Drawing.Point(13, 3);
+            this.tabControl1.Padding = new System.Drawing.Point(11, 3);
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1039, 19);
+            this.tabControl1.Size = new System.Drawing.Size(1060, 19);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabCtrlFaculty_DrawItem);
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
@@ -296,7 +390,7 @@
             this.currentStudentList.Name = "currentStudentList";
             this.currentStudentList.ReadOnly = true;
             this.currentStudentList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.currentStudentList.Size = new System.Drawing.Size(1039, 484);
+            this.currentStudentList.Size = new System.Drawing.Size(1060, 484);
             this.currentStudentList.TabIndex = 2;
             this.currentStudentList.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.currentStudentList_CellMouseRClick);
             // 
@@ -461,7 +555,7 @@
             // 
             // deleteStudent
             // 
-            this.deleteStudent.Image = global::ASAlloc.Properties.Resources.close;
+            this.deleteStudent.Image = global::ASAlloc.Properties.Resources.close_2;
             this.deleteStudent.Name = "deleteStudent";
             this.deleteStudent.Size = new System.Drawing.Size(158, 22);
             this.deleteStudent.Text = "Удалить запись";
@@ -472,25 +566,28 @@
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 23);
             // 
-            // toolStripButton7
+            // toolStripSeparator1
             // 
-            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton7.Image = global::ASAlloc.Properties.Resources.save__1_;
-            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(28, 32);
-            this.toolStripButton7.Text = "Сохранить приватный список";
-            this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
+            this.toolStripSeparator1.AutoSize = false;
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.toolStripSeparator1.Size = new System.Drawing.Size(20, 35);
             // 
-            // toolStripButton8
+            // toolStripSeparator2
             // 
-            this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton8.Image = global::ASAlloc.Properties.Resources.rename;
-            this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton8.Name = "toolStripButton8";
-            this.toolStripButton8.Size = new System.Drawing.Size(28, 32);
-            this.toolStripButton8.Text = "Переименовать список";
-            this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
+            this.toolStripSeparator2.AutoSize = false;
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(20, 35);
+            // 
+            // toolStripButton10
+            // 
+            this.toolStripButton10.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton10.Image = global::ASAlloc.Properties.Resources.certificate;
+            this.toolStripButton10.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton10.Name = "toolStripButton10";
+            this.toolStripButton10.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton10.Text = "Опубликовать";
+            this.toolStripButton10.Click += new System.EventHandler(this.toolStripButton10_Click);
             // 
             // facultyMainForm
             // 
@@ -561,5 +658,15 @@
         private System.Windows.Forms.ToolStripButton toolStripButton6;
         private System.Windows.Forms.ToolStripButton toolStripButton7;
         private System.Windows.Forms.ToolStripButton toolStripButton8;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
+        private System.Windows.Forms.ToolStripButton toolStripButton9;
+        private System.Windows.Forms.ToolStripMenuItem плановоеЗаселениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem внеплановоеЗаселениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem плановоеВыселениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem внеплановоеВыселениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton toolStripButton10;
     }
 }
