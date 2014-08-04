@@ -254,7 +254,7 @@ namespace ASAlloc
                     else if (e.Node.Parent.Parent != null)
                     {
                         currentStudentList.Rows.Clear();
-                        QueryResult pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, e.Node.Parent.Text, objConn).buildCommand());
+                        QueryResult pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildCommand());
                         pubList.addToDataGridView(currentStudentList, mainForm.colNames["order"]);                        
 
                         createNewTab(tabControl1, e.Node.Text, pubList, parseListName(e.Node.Parent.Text,e.Node.Text), mainForm.colNames["order"]);
@@ -693,9 +693,21 @@ namespace ASAlloc
         {
             TabPage currentTab = tabControl1.SelectedTab;          
             SqlConnection objConn = mainForm.createDBConnection();
+
+            QueryResult qr = SqlCommandBuilder.getQueryResult(new GetListIDCommand(currentTab.Text, objConn).buildCommand());
+            if (qr.getRowCount() != 0)
+            {
+                var mbResult = MessageBox.Show("Заменить существующий список?", "Список существует", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (mbResult == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    objConn.Close();
+                    return;
+                }
+                new RemoveListCommand(Convert.ToInt32(qr.getValue(0, 0)), objConn).buildCommand().ExecuteNonQuery();
+            }
             List<string> rbooks = new List<string>();
             for(int i=0; i<tabs[currentTab.Name].qr.getRowCount(); i++)
-                rbooks.Add(tabs[currentTab.Name].qr.getValue(i,1));
+                rbooks.Add(tabs[currentTab.Name].qr.getValue(i, 1).Trim());
             new AddListCommand(true, DateTime.Now, currentTabText(), rbooks, objConn).buildCommand().ExecuteNonQuery();
             setupListsNodes();
             objConn.Close();

@@ -106,23 +106,25 @@ namespace ASAlloc
     }
     class GetPublicListCommand : SqlCommandBuilder
     {
-        public GetPublicListCommand(string description, string author, SqlConnection connection)
+        public GetPublicListCommand(string description, SqlConnection connection)
         {
             desc_ = description;
-            author_ = author;
             conn = connection;
         }
         public override SqlCommand buildCommand()
         {
-            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
-                         "full join RT_Student_Lists on RT_Student_Lists.student = Student.id " +
-                         "full join Room on Room.id = (select room from Place where id = RT_Student_Lists.place) " +
+            string sql = "DECLARE @idList INT; " +
+                         "select @idList = Lists.id from Lists where description ='" + desc_ + "' and type = 'True'; " +
+                         "select Student.name, Student.rbook, Student.faculty, Place.room, Room.number, Floor.corpus from Student " +
+                         "full join RT_Student_Lists on student = Student.id and idList = @idList " +
+                         "full join Place on place.id = RT_Student_Lists.place " +
+                         "full join Room on Room.id = Place.room " +
                          "full join Floor on Floor.id = Room.floor " +
-                         "where Student.id in (select RT_Student_Lists.student from RT_Student_Lists where RT_Student_Lists.idList = " +
-                         "(select id from Lists where description = '" + desc_ + "' and author = '" + author_ + "'))";
+                         "where Student.id in (select student from RT_Student_Lists where idList = @idList)";
+
             return new SqlCommand(sql, conn);
         }
-        private string desc_, author_;
+        private string desc_;
     }
     class GetResidentsListCommand : SqlCommandBuilder
     {
@@ -647,7 +649,9 @@ namespace ASAlloc
             int listID = Convert.ToInt32(SqlCommandBuilder.getQueryResult(new GetListIDCommand(desc_, conn).buildCommand()).getValue(0,0));
             string rBooks = "";
             foreach (string currentStr in rBooksEnum_)
+            {
                 rBooks += "'" + currentStr + "', ";
+            }
             rBooks = rBooks.Substring(0, rBooks.Length - 2);
             sql = "SELECT id FROM Student WHERE rbook in (" + rBooks + ")";
             QueryResult qr = SqlCommandBuilder.getQueryResult(new SqlCommand(sql, conn));
