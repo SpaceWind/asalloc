@@ -145,15 +145,17 @@ namespace ASAlloc
     }
     class GetAllUsersExceptAdminCommand : SqlCommandBuilder
     {
-        public GetAllUsersExceptAdminCommand(SqlConnection connection)
+        public GetAllUsersExceptAdminCommand(bool facultiesOnly, SqlConnection connection)
         {
+            facultets = facultiesOnly;
             conn = connection;
         }
         public override SqlCommand buildCommand()
         {
-            string sql = "SELECT login FROM login WHERE role <> 1";
+            string sql = "SELECT login FROM login WHERE role NOT IN (" + (facultets ? "1,2)" : "1)");
             return new SqlCommand(sql, conn);
         }
+        bool facultets;
     }
     class AuthCommand : SqlCommandBuilder
     {

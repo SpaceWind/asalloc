@@ -137,7 +137,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "mainForm";
-            this.Text = "PSA";
+            this.Text = "Подключение к базе";
             this.Activated += new System.EventHandler(this.mainForm_Activated);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

@@ -66,7 +66,7 @@ namespace ASAlloc
             treeStudents.Nodes.Add(privateNodes);
 
             List<TreeNode> userListsNode = new List<TreeNode>();
-            qr = SqlCommandBuilder.getQueryResult(new GetAllUsersExceptAdminCommand(objConn).buildCommand());
+            qr = SqlCommandBuilder.getQueryResult(new GetAllUsersExceptAdminCommand(true, objConn).buildCommand());
             for (int i = 0; i < qr.getRowCount(); i++)
             {
                 QueryResult publicListsQuery = SqlCommandBuilder.getQueryResult(
@@ -209,6 +209,7 @@ namespace ASAlloc
 
         private void treeStudents_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right) return;
             SqlConnection objConn = mainForm.createDBConnection();
             if (studentListComboBox.Text == "Студенты")
             {
@@ -359,6 +360,7 @@ namespace ASAlloc
 
         private void treePlaces_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right) return;
             currentPlaceList.Rows.Clear();
             QueryResult qr;
             SqlConnection objConn = mainForm.createDBConnection();
@@ -517,12 +519,12 @@ namespace ASAlloc
         private void addNewListButton_Click(object sender, EventArgs e)
         {
             AddStudent dlg = new AddStudent();
+            dlg.StartPosition = FormStartPosition.CenterParent;
             dlg.ShowDialog();
             QueryResult qr = dlg.getResult();
             createNewTab(tabControl1, "Новый список", qr, tabDescriptor.tabType.unsavedPrivateListTab, new StringDictionary());
             currentStudentList.Rows.Clear();
             qr.addToDataGridView(currentStudentList);
-
         }
         private void currentStudentList_CellMouseRClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -601,6 +603,7 @@ namespace ASAlloc
         private void toolStripButton6_Click(object sender, EventArgs e)
         {
             AddStudent dlg = new AddStudent();
+            dlg.StartPosition = FormStartPosition.CenterParent;
             dlg.setResult(tabs[tabControl1.SelectedTab.Name].qr);
             dlg.ShowDialog();
             tabs[tabControl1.SelectedTab.Name].qr = dlg.getResult();
@@ -698,7 +701,44 @@ namespace ASAlloc
                     break; 
                 }
             objConn.Close();            
-        }  
+        } 
+        private void contextDeleteListFromTreeStudent(object sender, EventArgs e)
+        {
+            var mbResult = MessageBox.Show("Вы уверены?", "Удаление списка", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+            if (mbResult == System.Windows.Forms.DialogResult.Cancel)
+                 return;
+
+            SqlConnection objConn = mainForm.createDBConnection();
+            new RemoveListCommand(Convert.ToInt32(new GetListIDCommand(treeStudents.SelectedNode.Text, objConn).buildCommand().ExecuteScalar().ToString()), 
+                                  objConn).buildCommand().ExecuteNonQuery();
+            int expandIndex = 0;
+            if (treeStudents.SelectedNode.Parent.Parent != null)
+                expandIndex = treeStudents.SelectedNode.Parent.Index;
+            setupListsNodes();
+            if (expandIndex != 0)
+            {
+                treeStudents.Nodes[1].Expand();
+                treeStudents.Nodes[1].Nodes[expandIndex].Expand();
+            } else treeStudents.Nodes[expandIndex].Expand();
+            
+            objConn.Close();
+        }
+        private void treeStudents_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right && studentListComboBox.Text == "Списки студентов")
+            {
+                ((TreeView)sender).SelectedNode = e.Node;
+                if (e.Node.Parent != null && e.Node.Parent.Text != "Публичные списки")
+                {
+                    ToolStripMenuItem tsmiDeleteList = new ToolStripMenuItem("Удалить список");
+                    tsmiDeleteList.Click += contextDeleteListFromTreeStudent;
+                    tsmiDeleteList.Image = ASAlloc.Properties.Resources.close_2;
+                    var tsmTreeNodeClick = new ContextMenuStrip();
+                    tsmTreeNodeClick.Items.Add(tsmiDeleteList);
+                    tsmTreeNodeClick.Show(Cursor.Position);
+                }
+            }
+        } 
         /// <summary>
         /// ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
@@ -706,6 +746,30 @@ namespace ASAlloc
         static private int tabCounter = 0;
         private Dictionary<string, tabDescriptor> tabs = new Dictionary<string, tabDescriptor>();
 
-              
+        private void outToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SqlConnection objConn = mainForm.createDBConnection();
+
+
+          //  string listText = "Выселение (" + mainForm.name + ")";
+          //  qr.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
+          //  createNewTab(tabControl1, listText, qr, tabDescriptor.tabType.publicListOutUnplannedTab, mainForm.colNames["order"]);
+            objConn.Close();
+        }
+
+        private void plannedInToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //ранжирование
+        }
+
+        private void inToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //форма с заданием соответствия
+        }
+
+        private void offenseButton_Click(object sender, EventArgs e)
+        {
+            //форма с заданием соответствия нарушению
+        }        
     }
 }
