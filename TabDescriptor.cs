@@ -9,7 +9,7 @@ namespace ASAlloc
 {
     class tabDescriptor
     {
-        public enum tabType {noTab = 0, unsavedPrivateListTab = 1, savedPrivateListTab = 2, publicListInTab = 3, publicListOutTab = 4, publicListOutUnplannedTab = 5, violatorsListTab = 6, orderListTab = 7}
+        public enum tabType {noTab = 0, unsavedPrivateListTab = 1, savedPrivateListTab = 2, defaultPublicListTab = 3, publicListInTab = 4, publicListOutTab = 5, publicListOutUnplannedTab = 6, violatorsListTab = 7, orderListTab = 8}
         public class columnParserDescriptor
         {
             public int index;

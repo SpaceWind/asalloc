@@ -16,6 +16,7 @@ namespace ASAlloc
     {
         public mainForm()
         {
+            this.StartPosition = FormStartPosition.CenterScreen;
             InitializeComponent();
 
             role = 3;
@@ -188,9 +189,6 @@ namespace ASAlloc
                 facultyMainForm fmf = new facultyMainForm();
                 fmf.Show();
             }
-            
-            //facultyMainForm fmf = new facultyMainForm();
-            //fmf.Show();
         }
 
         private void button3_Click(object sender, EventArgs e)

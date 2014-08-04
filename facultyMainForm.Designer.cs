@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(facultyMainForm));
             this.tabCtrlFaculty = new System.Windows.Forms.TabControl();
             this.tabStudents = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -38,19 +39,22 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.плановоеЗаселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.внеплановоеЗаселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.plannedInToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.плановоеВыселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.внеплановоеВыселениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
+            this.plannedOutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.outToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.offenseButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.currentStudentList = new System.Windows.Forms.DataGridView();
             this.tabPlaceFund = new System.Windows.Forms.TabPage();
@@ -67,9 +71,6 @@
             this.редактироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteStudent = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
             this.tabCtrlFaculty.SuspendLayout();
             this.tabStudents.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -203,7 +204,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1066, 550);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1072, 550);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // toolStrip1
@@ -225,11 +226,11 @@
             this.toolStripSeparator2,
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2,
-            this.toolStripButton9,
+            this.offenseButton,
             this.toolStripButton10});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1066, 35);
+            this.toolStrip1.Size = new System.Drawing.Size(1072, 35);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -242,6 +243,13 @@
             this.toolStripButton2.Size = new System.Drawing.Size(28, 32);
             this.toolStripButton2.Text = "Добавить студента";
             this.toolStripButton2.Click += new System.EventHandler(this.addStudentButton_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.AutoSize = false;
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.toolStripSeparator1.Size = new System.Drawing.Size(20, 35);
             // 
             // toolStripButton3
             // 
@@ -304,63 +312,79 @@
             this.toolStripButton8.Text = "Переименовать список";
             this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.AutoSize = false;
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(20, 35);
+            // 
             // toolStripDropDownButton1
             // 
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.плановоеЗаселениеToolStripMenuItem,
-            this.внеплановоеЗаселениеToolStripMenuItem});
+            this.plannedInToolStripMenuItem,
+            this.inToolStripMenuItem});
             this.toolStripDropDownButton1.Image = global::ASAlloc.Properties.Resources.home;
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(37, 32);
             this.toolStripDropDownButton1.Text = "Заселение";
             // 
-            // плановоеЗаселениеToolStripMenuItem
+            // plannedInToolStripMenuItem
             // 
-            this.плановоеЗаселениеToolStripMenuItem.Name = "плановоеЗаселениеToolStripMenuItem";
-            this.плановоеЗаселениеToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-            this.плановоеЗаселениеToolStripMenuItem.Text = "Плановое заселение";
+            this.plannedInToolStripMenuItem.Name = "plannedInToolStripMenuItem";
+            this.plannedInToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.plannedInToolStripMenuItem.Text = "Плановое заселение";
             // 
-            // внеплановоеЗаселениеToolStripMenuItem
+            // inToolStripMenuItem
             // 
-            this.внеплановоеЗаселениеToolStripMenuItem.Name = "внеплановоеЗаселениеToolStripMenuItem";
-            this.внеплановоеЗаселениеToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-            this.внеплановоеЗаселениеToolStripMenuItem.Text = "Внеплановое заселение";
+            this.inToolStripMenuItem.Name = "inToolStripMenuItem";
+            this.inToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.inToolStripMenuItem.Text = "Внеплановое заселение";
             // 
             // toolStripDropDownButton2
             // 
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.плановоеВыселениеToolStripMenuItem,
-            this.внеплановоеВыселениеToolStripMenuItem});
+            this.plannedOutToolStripMenuItem,
+            this.outToolStripMenuItem});
             this.toolStripDropDownButton2.Image = global::ASAlloc.Properties.Resources.exile;
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
             this.toolStripDropDownButton2.Size = new System.Drawing.Size(37, 32);
             this.toolStripDropDownButton2.Text = "Выселение";
             // 
-            // плановоеВыселениеToolStripMenuItem
+            // plannedOutToolStripMenuItem
             // 
-            this.плановоеВыселениеToolStripMenuItem.Name = "плановоеВыселениеToolStripMenuItem";
-            this.плановоеВыселениеToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.плановоеВыселениеToolStripMenuItem.Text = "Плановое выселение";
-            this.плановоеВыселениеToolStripMenuItem.Click += new System.EventHandler(this.плановоеВыселениеToolStripMenuItem_Click);
+            this.plannedOutToolStripMenuItem.Name = "plannedOutToolStripMenuItem";
+            this.plannedOutToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.plannedOutToolStripMenuItem.Text = "Плановое выселение";
+            this.plannedOutToolStripMenuItem.Click += new System.EventHandler(this.plannedOutToolStripMenuItem_Click);
             // 
-            // внеплановоеВыселениеToolStripMenuItem
+            // outToolStripMenuItem
             // 
-            this.внеплановоеВыселениеToolStripMenuItem.Name = "внеплановоеВыселениеToolStripMenuItem";
-            this.внеплановоеВыселениеToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.внеплановоеВыселениеToolStripMenuItem.Text = "Внеплановое выселение";
+            this.outToolStripMenuItem.Name = "outToolStripMenuItem";
+            this.outToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.outToolStripMenuItem.Text = "Внеплановое выселение";
             // 
-            // toolStripButton9
+            // offenseButton
             // 
-            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton9.Image = global::ASAlloc.Properties.Resources.violation;
-            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton9.Name = "toolStripButton9";
-            this.toolStripButton9.Size = new System.Drawing.Size(28, 32);
-            this.toolStripButton9.Text = "Добавить нарушение";
+            this.offenseButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.offenseButton.Image = global::ASAlloc.Properties.Resources.violation;
+            this.offenseButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.offenseButton.Name = "offenseButton";
+            this.offenseButton.Size = new System.Drawing.Size(28, 32);
+            this.offenseButton.Text = "Добавить нарушение";
+            // 
+            // toolStripButton10
+            // 
+            this.toolStripButton10.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton10.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton10.Image")));
+            this.toolStripButton10.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton10.Name = "toolStripButton10";
+            this.toolStripButton10.Size = new System.Drawing.Size(28, 32);
+            this.toolStripButton10.Text = "Опубликовать";
+            this.toolStripButton10.Click += new System.EventHandler(this.toolStripButton10_Click);
             // 
             // tabControl1
             // 
@@ -373,7 +397,7 @@
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.Padding = new System.Drawing.Point(11, 3);
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1060, 19);
+            this.tabControl1.Size = new System.Drawing.Size(1066, 19);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabCtrlFaculty_DrawItem);
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
@@ -390,7 +414,7 @@
             this.currentStudentList.Name = "currentStudentList";
             this.currentStudentList.ReadOnly = true;
             this.currentStudentList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.currentStudentList.Size = new System.Drawing.Size(1060, 484);
+            this.currentStudentList.Size = new System.Drawing.Size(1066, 484);
             this.currentStudentList.TabIndex = 2;
             this.currentStudentList.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.currentStudentList_CellMouseRClick);
             // 
@@ -566,29 +590,6 @@
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 23);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.AutoSize = false;
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolStripSeparator1.Size = new System.Drawing.Size(20, 35);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.AutoSize = false;
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(20, 35);
-            // 
-            // toolStripButton10
-            // 
-            this.toolStripButton10.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton10.Image = global::ASAlloc.Properties.Resources.certificate;
-            this.toolStripButton10.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton10.Name = "toolStripButton10";
-            this.toolStripButton10.Size = new System.Drawing.Size(28, 32);
-            this.toolStripButton10.Text = "Опубликовать";
-            this.toolStripButton10.Click += new System.EventHandler(this.toolStripButton10_Click);
-            // 
             // facultyMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -660,11 +661,11 @@
         private System.Windows.Forms.ToolStripButton toolStripButton8;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
-        private System.Windows.Forms.ToolStripButton toolStripButton9;
-        private System.Windows.Forms.ToolStripMenuItem плановоеЗаселениеToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem внеплановоеЗаселениеToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem плановоеВыселениеToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem внеплановоеВыселениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton offenseButton;
+        private System.Windows.Forms.ToolStripMenuItem plannedInToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem plannedOutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem outToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton toolStripButton10;

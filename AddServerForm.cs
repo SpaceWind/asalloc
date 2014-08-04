@@ -14,6 +14,7 @@ namespace ASAlloc
     {
         public AddServerForm()
         {
+            this.StartPosition = FormStartPosition.CenterParent;
             InitializeComponent();
         }
 

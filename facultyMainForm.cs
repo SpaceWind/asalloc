@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
-//using System.Windows.Media;
 using System.Drawing.Drawing2D;
 
 namespace ASAlloc
@@ -25,6 +24,7 @@ namespace ASAlloc
             this.Text = mainForm.name;
             this.studentListComboBox.Text = this.studentListComboBox.Items[0].ToString();
             this.placeComboBox.Text = this.placeComboBox.Items[2].ToString();
+            setupButtonsEnabledProperty(tabDescriptor.tabType.noTab);
         }
 
         private void facultyMainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -190,7 +190,7 @@ namespace ASAlloc
             else if (placeComboBox.Text == "Доступные")
                 setupPlaceNode(true, true);
         }
-
+/*
         private tabDescriptor.tabType parseListName(string owner, string name)
         {
             bool isOwnList = owner == mainForm.name;
@@ -205,7 +205,7 @@ namespace ASAlloc
             if (name.IndexOf("Приказ") == 0)
                 return tabDescriptor.tabType.orderListTab;
             return tabDescriptor.tabType.unsavedPrivateListTab;
-        }
+        }*/
 
         private void treeStudents_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -257,7 +257,7 @@ namespace ASAlloc
                         QueryResult pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildCommand());
                         pubList.addToDataGridView(currentStudentList, mainForm.colNames["order"]);                        
 
-                        createNewTab(tabControl1, e.Node.Text, pubList, parseListName(e.Node.Parent.Text,e.Node.Text), mainForm.colNames["order"]);
+                        createNewTab(tabControl1, e.Node.Text, pubList, tabDescriptor.tabType.defaultPublicListTab, mainForm.colNames["order"]);
                     }
                 }
             }
@@ -289,6 +289,9 @@ namespace ASAlloc
                     break;
                 case tabDescriptor.tabType.savedPrivateListTab:
                     setupButtonsEnabledProperty(true, true, true, true, true, false);
+                    break;
+                case tabDescriptor.tabType.defaultPublicListTab:
+                    setupButtonsEnabledProperty(false, true, false, false, false, false);
                     break;
                 case tabDescriptor.tabType.publicListInTab:
                     setupButtonsEnabledProperty(true, true, false, false, false, true);
@@ -351,17 +354,6 @@ namespace ASAlloc
                 if (qr != null)
                     qr.addToDataGridView(currentStudentList,tabs[e.TabPage.Name].columnNameParser);
                 setupButtonsEnabledProperty(tabs[e.TabPage.Name].type_);
-            //    toolStripButton5.Enabled = tabs[e.TabPage.Name].isRemovable;
-            //    toolStripButton7.Enabled = tabs[e.TabPage.Name].isRemovable;
-            //    SqlConnection objConn = mainForm.createDBConnection();
-              /*  if (new GetListIDCommand(e.TabPage.Text, objConn).buildCommand().ExecuteScalar() == null)
-                {
-                    tabs[e.TabPage.Name].isRemovable = false;
-                    toolStripButton5.Enabled = false;
-                    toolStripButton7.Enabled = false;
-                    toolStripButton8.Enabled = false;
-                }*/
-              //  objConn.Close();
             }
         }
 
@@ -634,8 +626,6 @@ namespace ASAlloc
 
             new AddListCommand(false, DateTime.Now, listName, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
             setupButtonsEnabledProperty(tabDescriptor.tabType.savedPrivateListTab);
-            //tabs[tabControl1.SelectedTab.Name].isRemovable = true;
-            //toolStripButton5.Enabled = true;
             setupListsNodes();
             objConn.Close();
             MessageBox.Show("Список сохранён");
@@ -667,18 +657,7 @@ namespace ASAlloc
             setupListsNodes();
 
         }
-        private void OutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-        /// <summary>
-        /// ////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <summary>
-        private int prevTabIndex = -1;
-        static private int tabCounter = 0;
-        private Dictionary<string, tabDescriptor> tabs = new Dictionary<string, tabDescriptor>();
-
-        private void плановоеВыселениеToolStripMenuItem_Click(object sender, EventArgs e)
+        private void plannedOutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SqlConnection objConn = mainForm.createDBConnection();
             QueryResult qr = SqlCommandBuilder.getQueryResult(new GetResidentsListCommand(false, objConn).buildCommand());
@@ -709,8 +688,24 @@ namespace ASAlloc
             for(int i=0; i<tabs[currentTab.Name].qr.getRowCount(); i++)
                 rbooks.Add(tabs[currentTab.Name].qr.getValue(i, 1).Trim());
             new AddListCommand(true, DateTime.Now, currentTabText(), rbooks, objConn).buildCommand().ExecuteNonQuery();
+            studentListComboBox.Text = this.studentListComboBox.Items[1].ToString();
             setupListsNodes();
-            objConn.Close();
-        }        
+            treeStudents.Nodes[1].Expand();
+            for(int i=0; i<treeStudents.Nodes[1].Nodes.Count; i++)
+                if (treeStudents.Nodes[1].Nodes[i].Text == mainForm.name) 
+                { 
+                    treeStudents.Nodes[1].Nodes[i].Expand(); 
+                    break; 
+                }
+            objConn.Close();            
+        }  
+        /// <summary>
+        /// ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        private int prevTabIndex = -1;
+        static private int tabCounter = 0;
+        private Dictionary<string, tabDescriptor> tabs = new Dictionary<string, tabDescriptor>();
+
+              
     }
 }
