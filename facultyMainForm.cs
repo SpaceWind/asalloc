@@ -66,7 +66,7 @@ namespace ASAlloc
             treeStudents.Nodes.Add(privateNodes);
 
             List<TreeNode> userListsNode = new List<TreeNode>();
-            qr = SqlCommandBuilder.getQueryResult(new GetAllUsersExceptAdminCommand(true, objConn).buildCommand());
+            qr = SqlCommandBuilder.getQueryResult(new GetFacultyListCommand(objConn).buildCommand());
             for (int i = 0; i < qr.getRowCount(); i++)
             {
                 QueryResult publicListsQuery = SqlCommandBuilder.getQueryResult(
@@ -190,7 +190,7 @@ namespace ASAlloc
             else if (placeComboBox.Text == "Доступные")
                 setupPlaceNode(true, true);
         }
-/*
+
         private tabDescriptor.tabType parseListName(string owner, string name)
         {
             bool isOwnList = owner == mainForm.name;
@@ -199,13 +199,13 @@ namespace ASAlloc
             if (name.IndexOf("Заселение") == 0)
                 return tabDescriptor.tabType.publicListInTab;
             if (name.IndexOf("Выселение") == 0)
-                return tabDescriptor.tabType.publicListOutTab;
+                return tabDescriptor.tabType.publicListOutUnplannedTab;
             if (name.IndexOf("Нарушение") == 0)
                 return tabDescriptor.tabType.violatorsListTab;
             if (name.IndexOf("Приказ") == 0)
                 return tabDescriptor.tabType.orderListTab;
             return tabDescriptor.tabType.unsavedPrivateListTab;
-        }*/
+        }
 
         private void treeStudents_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -255,10 +255,15 @@ namespace ASAlloc
                     else if (e.Node.Parent.Parent != null)
                     {
                         currentStudentList.Rows.Clear();
-                        QueryResult pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildCommand());
+                        bool settlePublicList = e.Node.Text.IndexOf("Заселение (") == 0;
+                        QueryResult pubList;
+                        if (!settlePublicList)
+                            pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildReadPlaceFromStudentCommand());
+                        else
+                            pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildCommand());
                         pubList.addToDataGridView(currentStudentList, mainForm.colNames["order"]);                        
 
-                        createNewTab(tabControl1, e.Node.Text, pubList, tabDescriptor.tabType.defaultPublicListTab, mainForm.colNames["order"]);
+                        createNewTab(tabControl1, e.Node.Text, pubList, parseListName(e.Node.Parent.Text,e.Node.Text), mainForm.colNames["order"]);
                     }
                 }
             }
@@ -498,7 +503,6 @@ namespace ASAlloc
                     else
                         ((TabControl)sender).SelectTab(prevTabIndex);
                 }
-
             }
         }
 
@@ -602,7 +606,17 @@ namespace ASAlloc
 
         private void toolStripButton6_Click(object sender, EventArgs e)
         {
-            AddStudent dlg = new AddStudent();
+            var tabType = tabs[tabControl1.SelectedTab.Name].type_;
+            AddStudent dlg;
+            switch (tabType)
+            {
+                case tabDescriptor.tabType.publicListOutUnplannedTab:
+                    dlg = new AddStudent(AddStudent.addStudentDialogType.outType);
+                    break;
+                default:
+                    dlg = new AddStudent();
+                    break;
+            }
             dlg.StartPosition = FormStartPosition.CenterParent;
             dlg.setResult(tabs[tabControl1.SelectedTab.Name].qr);
             dlg.ShowDialog();
@@ -711,15 +725,7 @@ namespace ASAlloc
             SqlConnection objConn = mainForm.createDBConnection();
             new RemoveListCommand(Convert.ToInt32(new GetListIDCommand(treeStudents.SelectedNode.Text, objConn).buildCommand().ExecuteScalar().ToString()), 
                                   objConn).buildCommand().ExecuteNonQuery();
-            int expandIndex = 0;
-            if (treeStudents.SelectedNode.Parent.Parent != null)
-                expandIndex = treeStudents.SelectedNode.Parent.Index;
             setupListsNodes();
-            if (expandIndex != 0)
-            {
-                treeStudents.Nodes[1].Expand();
-                treeStudents.Nodes[1].Nodes[expandIndex].Expand();
-            } else treeStudents.Nodes[expandIndex].Expand();
             
             objConn.Close();
         }
@@ -728,7 +734,7 @@ namespace ASAlloc
             if (e.Button == System.Windows.Forms.MouseButtons.Right && studentListComboBox.Text == "Списки студентов")
             {
                 ((TreeView)sender).SelectedNode = e.Node;
-                if (e.Node.Parent != null && e.Node.Parent.Text != "Публичные списки")
+                if (e.Node.Parent != null && (e.Node.Parent.Text == "Личные списки" || e.Node.Parent.Text == mainForm.name))
                 {
                     ToolStripMenuItem tsmiDeleteList = new ToolStripMenuItem("Удалить список");
                     tsmiDeleteList.Click += contextDeleteListFromTreeStudent;
@@ -750,10 +756,14 @@ namespace ASAlloc
         {
             SqlConnection objConn = mainForm.createDBConnection();
 
-
-          //  string listText = "Выселение (" + mainForm.name + ")";
-          //  qr.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
-          //  createNewTab(tabControl1, listText, qr, tabDescriptor.tabType.publicListOutUnplannedTab, mainForm.colNames["order"]);
+            AddStudent addDialog = new AddStudent(AddStudent.addStudentDialogType.outType);
+            addDialog.StartPosition = FormStartPosition.CenterParent;
+            addDialog.ShowDialog();
+            
+            string listText = "Выселение (" + mainForm.name + ")";
+            var result = addDialog.getResult();
+            result.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
+            createNewTab(tabControl1, listText, result, tabDescriptor.tabType.publicListOutUnplannedTab, mainForm.colNames["order"]);
             objConn.Close();
         }
 
@@ -770,6 +780,17 @@ namespace ASAlloc
         private void offenseButton_Click(object sender, EventArgs e)
         {
             //форма с заданием соответствия нарушению
+            var dlg = new createOffence();
+            dlg.ShowDialog();
+            QueryResult result = dlg.getStudents();
+            string desc = dlg.getDescription();
+            string type = dlg.getType();
+            SqlConnection objConn = mainForm.createDBConnection();
+
+            string listText = "Нарушение (" + mainForm.name + ") от: "+DateTime.Now.ToString();
+            result.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
+            createNewTab(tabControl1, listText, result, tabDescriptor.tabType.violatorsListTab, mainForm.colNames["order"]);
+            objConn.Close();
         }        
     }
 }

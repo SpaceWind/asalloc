@@ -11,11 +11,53 @@ using System.Windows.Forms;
 
 namespace ASAlloc
 {
+    
     public partial class AddStudent : Form
     {
+        public enum addStudentDialogType { defaultType = 0, outType = 1, inType = 2, offenseType = 3}
         public AddStudent()
         {
             InitializeComponent();
+            dialogType = addStudentDialogType.defaultType;
+            setupFaculties();
+        }
+        public AddStudent(addStudentDialogType type)
+        {
+            InitializeComponent();
+            dialogType = type;
+            setupControls();
+        }
+
+        private void setupControls()
+        { 
+            switch(dialogType)
+            {
+                case addStudentDialogType.defaultType:
+                    break;                
+                default:
+                    comboBox1.Items.Clear();
+                    comboBox1.Items.Add(mainForm.name);
+                    comboBox1.Text = comboBox1.Items[0].ToString();
+                    comboBox1.Enabled = false;
+                    radioButton4.Enabled = false;
+                    radioButton5.Enabled = false;
+                    radioButton6.Enabled = false;
+                    radioButton4.Checked = false;
+                    switch(dialogType)
+                    {
+                        case addStudentDialogType.inType:
+                            radioButton6.Checked = true;
+                            break;
+                        case addStudentDialogType.offenseType:
+                            radioButton4.Checked = true;
+                            break;
+                        case addStudentDialogType.outType:
+                            radioButton5.Checked = true;
+                            break;
+                        default: break;
+                    }
+                    break;
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -25,16 +67,31 @@ namespace ASAlloc
             string havePlace = radioButton4.Checked ? "" : (radioButton5.Checked ? "True" : "False");
             List<int> courses = parseYos(textBox1.Text);
             string faculty = comboBox1.Text;
-            QueryResult qr = SqlCommandBuilder.getQueryResult(new SelectStudentCommand(faculty, gender, courses, havePlace, objConn).buildCommand());
-            if (qr.getRowCount() == 0)
-                MessageBox.Show("Ничего не найдено!");
+            if (dialogType == addStudentDialogType.defaultType)
+            {
+                QueryResult qr = SqlCommandBuilder.getQueryResult(new SelectStudentCommand(faculty, gender, courses, havePlace, objConn).buildCommand());
+                if (qr.getRowCount() == 0)
+                    MessageBox.Show("Ничего не найдено!");
+                else
+                {
+                    dataGridView1.Rows.Clear();
+                    dataGridView1.Columns.Clear();
+                    qr.parseColumn(2, mainForm.colNames["gender"]);
+                    qr.parseColumn(5, "НЕТ", "ДА");
+                    qr.addToDataGridView(dataGridView1, mainForm.colNames["student"]);
+                }
+            }
             else
             {
-                dataGridView1.Rows.Clear();
-                dataGridView1.Columns.Clear();
-                qr.parseColumn(2, mainForm.colNames["gender"]);
-                qr.parseColumn(5, "НЕТ", "ДА");
-                qr.addToDataGridView(dataGridView1,mainForm.colNames["student"]);
+                QueryResult qr = SqlCommandBuilder.getQueryResult(new SelectStudentCommand(faculty, gender, courses, havePlace, objConn).buildOrderCommand());
+                if (qr.getRowCount() == 0)
+                    MessageBox.Show("Ничего не найдено!");
+                else
+                {
+                    dataGridView1.Rows.Clear();
+                    dataGridView1.Columns.Clear();
+                    qr.addToDataGridView(dataGridView1, mainForm.colNames["order"]);
+                }
             }
             DialogResult = DialogResult.None;
             objConn.Close();
@@ -142,7 +199,7 @@ namespace ASAlloc
             return yos > 0 && yos < 7;
         }
 
-        private void AddStudent_Activated(object sender, EventArgs e)
+        private void setupFaculties()
         {
             SqlConnection objConn = mainForm.createDBConnection();
             QueryResult qr = SqlCommandBuilder.getQueryResult(new GetFacultyListCommand(objConn).buildCommand());
@@ -172,5 +229,6 @@ namespace ASAlloc
         {
             result.removeDuplicates();
         }
+        private addStudentDialogType dialogType;
     }
 }

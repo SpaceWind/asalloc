@@ -111,11 +111,23 @@ namespace ASAlloc
             desc_ = description;
             conn = connection;
         }
+        public SqlCommand buildReadPlaceFromStudentCommand()
+        {
+            string sql = "DECLARE @idList INT; " +
+                         "select @idList = Lists.id from Lists where description ='" + desc_ + "' and type = 'True'; " +
+                         "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join Place on place.id = Student.place " +
+                         "full join Room on Room.id = Place.room " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.id in (select student from RT_Student_Lists where idList = @idList)";
+
+            return new SqlCommand(sql, conn);
+        }
         public override SqlCommand buildCommand()
         {
             string sql = "DECLARE @idList INT; " +
                          "select @idList = Lists.id from Lists where description ='" + desc_ + "' and type = 'True'; " +
-                         "select Student.name, Student.rbook, Student.faculty, Place.room, Room.number, Floor.corpus from Student " +
+                         "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
                          "full join RT_Student_Lists on student = Student.id and idList = @idList " +
                          "full join Place on place.id = RT_Student_Lists.place " +
                          "full join Room on Room.id = Place.room " +
@@ -142,20 +154,6 @@ namespace ASAlloc
             return new SqlCommand(sql, conn);
         }
         private bool all_;
-    }
-    class GetAllUsersExceptAdminCommand : SqlCommandBuilder
-    {
-        public GetAllUsersExceptAdminCommand(bool facultiesOnly, SqlConnection connection)
-        {
-            facultets = facultiesOnly;
-            conn = connection;
-        }
-        public override SqlCommand buildCommand()
-        {
-            string sql = "SELECT login FROM login WHERE role NOT IN (" + (facultets ? "1,2)" : "1)");
-            return new SqlCommand(sql, conn);
-        }
-        bool facultets;
     }
     class AuthCommand : SqlCommandBuilder
     {
@@ -583,6 +581,22 @@ namespace ASAlloc
                 + ((yos_.Count!=0)?" AND yos IN "+yosList+" ":"");
             return new SqlCommand(sql, conn);
         }
+        public SqlCommand buildOrderCommand()
+        {
+            string yosList = "(";
+            foreach(int i in yos_)
+                yosList += i.ToString() + ",";
+            yosList = yosList.Substring(0,yosList.Length-1)+")";
+            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join Place on Place.id = Student.place " +
+                         "full join Room on Room.id = Place.room " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.faculty = '" + faculty_ + "'" +
+                         ((gender_ != "") ? " AND gender = '" + gender_ + "' " : "") +
+                         ((isHavePlace_ != "") ? ((isHavePlace_ == "True") ? " AND place IS NOT NULL " : " AND place IS NULL ") : "") +
+                         ((yos_.Count != 0) ? " AND yos IN " + yosList + " " : "");
+            return new SqlCommand(sql, conn);
+        }
         private string faculty_, gender_;
         List<int> yos_;
         string isHavePlace_;
@@ -632,6 +646,50 @@ namespace ASAlloc
         }
         private int id;
     }
+
+    class CreateSettleListCommand : SqlCommandBuilder
+    {
+        public CreateSettleListCommand(string description, StringDictionary studentPlaces, SqlConnection connection)
+        {
+            description_ = description;
+            studentPlaces_ = studentPlaces;
+            conn = connection;
+            DateTime dt = DateTime.Now;
+            date_ = dt.Year.ToString() + "-" + dt.Month.ToString() + "-" + dt.Day.ToString() + " " +
+                    dt.Hour.ToString() + ":" + dt.Minute.ToString() + ":" + dt.Second.ToString();
+
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "INSERT INTO Lists (type, date, author, description) VALUES ('True', CONVERT (smalldatetime, '" + date_ + "',120), '" +
+                         mainForm.name + "', '" + description_ + "')";
+            new SqlCommand(sql, conn).ExecuteNonQuery();
+            int listID = Convert.ToInt32(SqlCommandBuilder.getQueryResult(new GetListIDCommand(description_, conn).buildCommand()).getValue(0, 0));
+            string rBooks = "";
+            string[] rBooksArray = new string[studentPlaces_.Keys.Count]; 
+            studentPlaces_.Keys.CopyTo(rBooksArray, 0);
+            foreach (string currentStr in rBooksArray)
+            {
+                rBooks += "'" + currentStr + "', ";
+            }
+            rBooks = rBooks.Substring(0, rBooks.Length - 2);
+
+            sql = "SELECT id, rbook FROM Student WHERE rbook in (" + rBooks + ")";
+            QueryResult qr = SqlCommandBuilder.getQueryResult(new SqlCommand(sql, conn));
+            string values = "";
+
+            for (int i = 0; i < qr.getRowCount(); i++)
+                values += qr.getValue(i, 0) + ", " + listID + ", " + studentPlaces_[qr.getValue(i, 1)] + "), (";
+            values = values.Substring(0, values.Length - 4);
+            sql = "INSERT INTO RT_Student_Lists (student, idList, place) VALUES (" + values + ")";
+            return new SqlCommand(sql, conn);
+
+        }
+        private StringDictionary studentPlaces_;
+        private string description_;
+        private string date_;
+    }
+
     class AddListCommand : SqlCommandBuilder
     {
         public AddListCommand(bool type, DateTime date, string description, List<string> rBooksEnum, SqlConnection connection)

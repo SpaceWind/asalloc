@@ -1,19 +1,19 @@
 @servers
 (local)\ASALLOC
 tcp:(local)\ASALLOC,49172
-tcp:,49172
+(local)\ASALLOC
 /servers
 
 @securityMode
 Integrated
 Integrated
-
+Integrated
 /securityMode
 
 @serverNames
 PHOENIX PC (Debug:ФИТ)
 local
-
+local (no debug)
 /serverNames
 
 #initCatalog
