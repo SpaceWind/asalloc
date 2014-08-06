@@ -84,6 +84,7 @@
     <Compile Include="adminMainForm.Designer.cs">
       <DependentUpon>adminMainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AllocatingSystem.cs" />
     <Compile Include="Auth.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -687,6 +687,11 @@ namespace ASAlloc
 
         private void toolStripButton10_Click(object sender, EventArgs e)
         {
+            if (currentStudentList.RowCount <= 1)
+            {
+                MessageBox.Show("Публикация пустого списка запрещено!", "Список пуст", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             TabPage currentTab = tabControl1.SelectedTab;          
             SqlConnection objConn = mainForm.createDBConnection();
 
