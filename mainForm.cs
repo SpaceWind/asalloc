@@ -19,6 +19,8 @@ namespace ASAlloc
             this.StartPosition = FormStartPosition.CenterScreen;
             InitializeComponent();
 
+            List<studentDescriptor> brianHloes = new List<studentDescriptor>(965851);
+
             role = 3;
             name = "ФИТ";
         }

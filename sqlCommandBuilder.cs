@@ -85,6 +85,59 @@ namespace ASAlloc
         }
         private string author_, type_, desc_;
     }
+    class GetStudentBenefitsId : SqlCommandBuilder
+    {
+        public GetStudentBenefitsId(string rbook, SqlConnection connection)
+        {
+            rBook_ = rbook;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Primary_Benefit.id from Primary_Benefit " +
+                         "where Primary_Benefit.id in " +
+                         "(select RT_Student_Benefit.benefit from RT_Student_Benefit " +
+                         "where RT_Student_Benefit.student = " +
+                         "(select Student.id from Student where Student.rbook = '" + rBook_ + "'))";
+            return new SqlCommand(sql, conn);
+        }
+        private string rBook_;
+    }
+    class GetViolationCountForStudent : SqlCommandBuilder
+    {
+        public GetViolationCountForStudent(string rbook, SqlConnection connection)
+        {
+            rBook_ = rbook;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select COUNT(Offense.id) from Offense where Offense.idList in " +
+                         "(select Lists.id from Lists where Lists.id = " +
+                         "(select idList from RT_Student_Lists where student = " +
+                         "(select id from Student where rbook = '" + rBook_ + "')))";
+            return new SqlCommand(sql, conn);
+        }
+        private string rBook_;
+    }
+    class GetPrevPlacesForStudents : SqlCommandBuilder
+    {
+        public GetPrevPlacesForStudents(string faculty, SqlConnection connection)
+        {
+            faculty_ = faculty;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Student.rbook, RT_Student_Lists.place, Student.accomm_range, Student.budget from RT_Student_Lists " +
+                         "inner join Student on Student.id = RT_Student_Lists.student and Student.faculty = '" + faculty_ + "' " +
+                         "where RT_Student_Lists.idList = " +
+                         "(select Orders.idList from Orders where date = " +
+                         "(select MAX(Orders.date) from Orders where type = 'False'))";
+            return new SqlCommand(sql, conn);
+        }
+        private string faculty_;
+    }
     class GetOrderCommand : SqlCommandBuilder
     {
         public GetOrderCommand(string date, SqlConnection connection)
@@ -502,6 +555,18 @@ namespace ASAlloc
         }
         private string desc;
         private bool enabled;
+    }
+    class GetBenefitCoefs : SqlCommandBuilder
+    {
+        public GetBenefitCoefs(SqlConnection connection)
+        {
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            return new SqlCommand("select id, priority from Pimary_Benefit", conn);
+        }
+
     }
     class GetFacultyStudentsCommand : SqlCommandBuilder
     {

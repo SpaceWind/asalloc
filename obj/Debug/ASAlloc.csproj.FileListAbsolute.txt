@@ -37,3 +37,4 @@ c:\asalloc\project\bin\Debug\ASAlloc.pdb
 c:\asalloc\project\obj\Debug\ASAlloc.AddServerForm.resources
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.AddServerForm.resources
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.createOffence.resources
+c:\asalloc\project\obj\Debug\ASAlloc.createOffence.resources

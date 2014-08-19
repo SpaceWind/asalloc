@@ -1,11 +1,11 @@
 @servers
-(local)\ASALLOC
+tcp:10.62.222.193,49172
 tcp:(local)\ASALLOC,49172
 (local)\ASALLOC
 /servers
 
 @securityMode
-Integrated
+Normal
 Integrated
 Integrated
 /securityMode
