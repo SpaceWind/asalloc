@@ -66,12 +66,25 @@
     <Compile Include="addEditUserForm.Designer.cs">
       <DependentUpon>addEditUserForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddServerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddServerForm.Designer.cs">
+      <DependentUpon>AddServerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddStudent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddStudent.Designer.cs">
+      <DependentUpon>AddStudent.cs</DependentUpon>
+    </Compile>
     <Compile Include="adminMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="adminMainForm.Designer.cs">
       <DependentUpon>adminMainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AllocatingSystem.cs" />
     <Compile Include="Auth.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,11 +97,30 @@
     <Compile Include="ChooseBenefitForm.Designer.cs">
       <DependentUpon>ChooseBenefitForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="createOffence.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="createOffence.Designer.cs">
+      <DependentUpon>createOffence.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Defines.cs" />
     <Compile Include="facultyMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="facultyMainForm.Designer.cs">
       <DependentUpon>facultyMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="findStudentDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="findStudentDialog.Designer.cs">
+      <DependentUpon>findStudentDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="listNameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="listNameDialog.Designer.cs">
+      <DependentUpon>listNameDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="mainForm.cs">
       <SubType>Form</SubType>
@@ -118,6 +150,12 @@
     <EmbeddedResource Include="addEditUserForm.resx">
       <DependentUpon>addEditUserForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AddServerForm.resx">
+      <DependentUpon>AddServerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddStudent.resx">
+      <DependentUpon>AddStudent.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="adminMainForm.resx">
       <DependentUpon>adminMainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -127,8 +165,18 @@
     <EmbeddedResource Include="ChooseBenefitForm.resx">
       <DependentUpon>ChooseBenefitForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="createOffence.resx">
+      <DependentUpon>createOffence.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="facultyMainForm.resx">
       <DependentUpon>facultyMainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="findStudentDialog.resx">
+      <DependentUpon>findStudentDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="listNameDialog.resx">
+      <DependentUpon>listNameDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mainForm.resx">
       <DependentUpon>mainForm.cs</DependentUpon>
@@ -184,6 +232,63 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\1398002740518.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\removeFromList.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\removeFromList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\price-list-icon-76.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\list_add_user.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\top-authors-list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save-as-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\System-Save-as-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\close-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\index.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rename.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sertificate.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\certificate-128.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\certificate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\home.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\violation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\загруженное.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

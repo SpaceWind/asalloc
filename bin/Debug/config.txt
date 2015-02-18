@@ -1,0 +1,41 @@
+@servers
+tcp:10.62.222.193,49172
+tcp:(local)\ASALLOC,49172
+(local)\ASALLOC
+tcp:(lacal)\ASALLOC,49172
+/servers
+
+@securityMode
+Normal
+Integrated
+Integrated
+Integrated
+/securityMode
+
+@serverNames
+PHOENIX PC (Debug:ФИТ)
+local
+local (no debug)
+ASAlloc_base
+/serverNames
+
+#initCatalog
+Initial Catalog=PSA_base;
+
+@DebugMode
+faculty
+faculty
+none
+none
+/DebugMode
+
+@DebugLogin
+ФИТ
+ФИТ
+
+
+/DebugLogin
+
+#lastserver
+
+

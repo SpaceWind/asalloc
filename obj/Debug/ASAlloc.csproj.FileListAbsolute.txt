@@ -13,3 +13,12 @@ D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.facultyMainForm.resourc
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.mainForm.resources
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.newStudentForm.resources
 D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.prorectorMainForm.resources
+D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.csprojResolveAssemblyReference.cache
+D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.AddStudent.resources
+D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.listNameDialog.resources
+D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.AddServerForm.resources
+D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.createOffence.resources
+D:\visual studio 2012\Projects\asalloc\obj\Debug\ASAlloc.findStudentDialog.resources
+D:\visual studio 2013\Projects\asalloc\bin\Debug\ASAlloc.exe.config
+D:\visual studio 2013\Projects\asalloc\obj\Debug\ASAlloc.exe
+D:\visual studio 2013\Projects\asalloc\obj\Debug\ASAlloc.pdb

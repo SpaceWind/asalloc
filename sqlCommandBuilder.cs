@@ -85,6 +85,124 @@ namespace ASAlloc
         }
         private string author_, type_, desc_;
     }
+    class GetStudentBenefitsId : SqlCommandBuilder
+    {
+        public GetStudentBenefitsId(string rbook, SqlConnection connection)
+        {
+            rBook_ = rbook;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Primary_Benefit.id from Primary_Benefit " +
+                         "where Primary_Benefit.id in " +
+                         "(select RT_Student_Benefit.benefit from RT_Student_Benefit " +
+                         "where RT_Student_Benefit.student = " +
+                         "(select Student.id from Student where Student.rbook = '" + rBook_ + "'))";
+            return new SqlCommand(sql, conn);
+        }
+        private string rBook_;
+    }
+    class GetViolationCountForStudent : SqlCommandBuilder
+    {
+        public GetViolationCountForStudent(string rbook, SqlConnection connection)
+        {
+            rBook_ = rbook;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select COUNT(Offense.id) from Offense where Offense.idList in " +
+                         "(select Lists.id from Lists where Lists.id = " +
+                         "(select idList from RT_Student_Lists where student = " +
+                         "(select id from Student where rbook = '" + rBook_ + "') and idList in (select Offense.idList from Offense)))";
+            return new SqlCommand(sql, conn);
+        }
+        private string rBook_;
+    }
+    class GetSecondaryBenefitsCommand : SqlCommandBuilder
+    {
+        public GetSecondaryBenefitsCommand(string faculty, SqlConnection connection)
+        {
+            faculty_ = faculty;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "SELECT MIN(Student.accomm_range), MAX(Student.accomm_range), MIN(Student.budget), MAX(Student.budget), " +
+                         "(SELECT Primary_Benefit.priority FROM Primary_Benefit WHERE Primary_Benefit.description = 'Семейный доход') FROM Student " +
+                         "WHERE Student.faculty = '" + faculty_ + "'";
+            return new SqlCommand(sql, conn);
+        }
+        private string faculty_;
+    }
+    class GetResidentsInfoCommand : SqlCommandBuilder
+    {
+        public GetResidentsInfoCommand(string faculty, SqlConnection connection)
+        {
+            faculty_ = faculty;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "declare @lastOrderDate smalldatetime; " +
+                         "select @lastOrderDate = MAX(Orders.date) from Orders where type = 'False' " +
+                         "select Student.rbook, RT_Student_Lists.place, Student.accomm_range, Student.budget, " +
+                         "Student.yos, Student.gender, (select SUM(Primary_Benefit.priority) " + 
+                         "from RT_Student_Benefit " +                         
+                         "full join Primary_Benefit on Primary_Benefit.id = RT_Student_Benefit.benefit  " +
+                         "where RT_Student_Benefit.student = Student.id) " +
+                         "from RT_Student_Lists " +
+                         "inner join Student on Student.id = RT_Student_Lists.student and Student.faculty = '" + faculty_ +"' " +
+                         "where RT_Student_Lists.idList = " +
+                         "(select Orders.idList from Orders where date = @lastOrderDate)";
+                          /*
+                          "select Student.rbook, RT_Student_Lists.place, Student.accomm_range, Student.budget, " + 
+                          "(select SUM(Primary_Benefit.priority), Student.yos, Student.gender from RT_Student_Benefit " +
+                          "full join Primary_Benefit on Primary_Benefit.id = RT_Student_Benefit.benefit " +
+                          "where RT_Student_Benefit.student = Student.id) " +
+                          "from RT_Student_Lists " +
+                          "inner join Student on Student.id = RT_Student_Lists.student and Student.faculty = '" + faculty_ +"' " +
+                          "where RT_Student_Lists.idList = " + 
+                          "(select Orders.idList from Orders where date = " +
+                          "(select MAX(Orders.date) from Orders where type = 'False'))";*/
+            return new SqlCommand(sql, conn);
+        }
+        private string faculty_;
+    }
+    class GetRoomInfoCommand : SqlCommandBuilder
+    {
+        public GetRoomInfoCommand(string faculty, SqlConnection connection)
+        {
+            faculty_ = faculty;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Room.id, Room.type, (select COUNT(Place.id) from Place where Place.room = Room.id and Place.owner = '" + faculty_ + "') from Room " +
+                         "where Room.id in (select Place.room from Place where Place.owner = '" + faculty_ + "')";
+            return new SqlCommand(sql, conn);
+        }
+        private string faculty_;
+    }
+    class GetPrevPlacesForStudentsCommand : SqlCommandBuilder
+    {
+        public GetPrevPlacesForStudentsCommand(string faculty, SqlConnection connection)
+        {
+            faculty_ = faculty;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Student.rbook, RT_Student_Lists.place, Student.accomm_range, Student.budget from RT_Student_Lists " +
+                         "inner join Student on Student.id = RT_Student_Lists.student and Student.faculty = '" + faculty_ + "' " +
+                         "where RT_Student_Lists.idList = " +
+                         "(select Orders.idList from Orders where date = " +
+                         "(select MAX(Orders.date) from Orders where type = 'False'))";
+            return new SqlCommand(sql, conn);
+        }
+        private string faculty_;
+    }
     class GetOrderCommand : SqlCommandBuilder
     {
         public GetOrderCommand(string date, SqlConnection connection)
@@ -94,27 +212,67 @@ namespace ASAlloc
         }
         public override SqlCommand buildCommand()
         {
-            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
-                         "full join RT_Student_Lists on RT_Student_Lists.student = Student.id " +
-                         "full join Room on Room.id = (select room from Place where id = RT_Student_Lists.place) " +
+            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from RT_Student_Lists " +
+                         "full join Student on Student.id = RT_Student_Lists.student " +
+                         "full join Room on Room.id = " +
+	                            "(select Place.room from Place where Place.id = RT_Student_Lists.place) " +
                          "full join Floor on Floor.id = Room.floor " +
-                         "where Student.id in (select RT_Student_Lists.student from RT_Student_Lists where RT_Student_Lists.idList = " +
-                         "(select idList from Orders where Orders.date = CONVERT (smalldatetime, '" + date_ + "',120)))";
+                         "where RT_Student_Lists.idList = " + 
+                         "(select idList from Orders where Orders.date = CONVERT (smalldatetime, '" + date_ + "',120))";
             return new SqlCommand(sql, conn);
         }
         private string date_;
     }
-    class GetAllUsersExceptAdminCommand : SqlCommandBuilder
+    class GetPublicListCommand : SqlCommandBuilder
     {
-        public GetAllUsersExceptAdminCommand(SqlConnection connection)
+        public GetPublicListCommand(string description, SqlConnection connection)
         {
+            desc_ = description;
+            conn = connection;
+        }
+        public SqlCommand buildReadPlaceFromStudentCommand()
+        {
+            string sql = "DECLARE @idList INT; " +
+                         "select @idList = Lists.id from Lists where description ='" + desc_ + "' and type = 'True'; " +
+                         "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join Place on place.id = Student.place " +
+                         "full join Room on Room.id = Place.room " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.id in (select student from RT_Student_Lists where idList = @idList)";
+
+            return new SqlCommand(sql, conn);
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "DECLARE @idList INT; " +
+                         "select @idList = Lists.id from Lists where description ='" + desc_ + "' and type = 'True'; " +
+                         "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join RT_Student_Lists on student = Student.id and idList = @idList " +
+                         "full join Place on place.id = RT_Student_Lists.place " +
+                         "full join Room on Room.id = Place.room " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.id in (select student from RT_Student_Lists where idList = @idList)";
+
+            return new SqlCommand(sql, conn);
+        }
+        private string desc_;
+    }
+    class GetResidentsListCommand : SqlCommandBuilder
+    {
+        public GetResidentsListCommand(bool all, SqlConnection connection)
+        {
+            all_ = all;
             conn = connection;
         }
         public override SqlCommand buildCommand()
         {
-            string sql = "SELECT login FROM login WHERE role <> 1";
+            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join Room on Room.id = (select room from Place where id = Student.place) " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.place is not Null" + (all_ ? "" : " and Student.faculty = '" + mainForm.name + "'");
             return new SqlCommand(sql, conn);
         }
+        private bool all_;
     }
     class AuthCommand : SqlCommandBuilder
     {
@@ -251,6 +409,7 @@ namespace ASAlloc
             conn = connection;
             building_ = building;
             floor_ = floor;
+            columnOrder_ = "number, current_places, max_places";
             tail = faculty ? " AND id IN (SELECT room FROM Place WHERE owner = '" + mainForm.name + (state ? "'" : "' AND state = 'False'") + ")" : "";
         }
         public GetRoomsRowCommand(int building, string columnOrder, SqlConnection connection)
@@ -418,6 +577,29 @@ namespace ASAlloc
         }
         private string login;
     }
+    class SetBenefitValueCommand : SqlCommandBuilder
+    {
+        public SetBenefitValueCommand(string desc_, int value_, SqlConnection connection)
+        {
+            desc = desc_;
+            value = value_;
+            conn = connection;
+        }
+        override public SqlCommand buildCommand()
+        {
+            string sql = "UPDATE Primary_Benefit SET priority = @val1 " +
+                         "WHERE description = @desc";
+            SqlCommand cmd = new SqlCommand();
+
+            cmd.Connection = conn;
+            cmd.CommandText = sql;
+            cmd.Parameters.Add("@val1", SqlDbType.Int).Value = value;
+            cmd.Parameters.Add("@desc", SqlDbType.NVarChar).Value = desc;
+            return cmd;
+        }
+        private string desc;
+        private int value;
+    }
     class SetBenefitStateCommand : SqlCommandBuilder
     {
         public SetBenefitStateCommand(string desc_, bool enabled_, SqlConnection connection)
@@ -441,28 +623,17 @@ namespace ASAlloc
         private string desc;
         private bool enabled;
     }
-    class SetBenefitValueCommand : SqlCommandBuilder
+    class GetBenefitCoefs : SqlCommandBuilder
     {
-        public SetBenefitValueCommand(string desc_, int value_, SqlConnection connection)
+        public GetBenefitCoefs(SqlConnection connection)
         {
-            desc = desc_;
-            value = value_;
             conn = connection;
         }
-        override public SqlCommand buildCommand()
+        public override SqlCommand buildCommand()
         {
-            string sql = "UPDATE Primary_Benefit SET priority = @val1 " +
-                         "WHERE description = @desc";
-            SqlCommand cmd = new SqlCommand();
-
-            cmd.Connection = conn;
-            cmd.CommandText = sql;
-            cmd.Parameters.Add("@val1", SqlDbType.Int).Value = value;
-            cmd.Parameters.Add("@desc", SqlDbType.NVarChar).Value = desc;
-            return cmd;
+            return new SqlCommand("select id, priority from Pimary_Benefit", conn);
         }
-        private string desc;
-        private int value;
+
     }
     class GetFacultyStudentsCommand : SqlCommandBuilder
     {
@@ -519,5 +690,269 @@ namespace ASAlloc
         }
         private string rBook_;
         private List<Object> benefits_;
+    }
+    class SelectStudentCommand : SqlCommandBuilder
+    {
+        public SelectStudentCommand(string faculty, string gender, List<int> yos, string isHavePlace, SqlConnection connection)
+        {
+            faculty_ = faculty;
+            gender_ = gender;
+            yos_ = yos;
+            isHavePlace_ = isHavePlace;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string yosList = "(";
+            foreach(int i in yos_)
+                yosList += i.ToString() + ",";
+            yosList = yosList.Substring(0,yosList.Length-1)+")";
+            string sql = "SELECT name, rbook, gender, faculty, yos, place, accomm_range, budget FROM Student WHERE faculty = '" + faculty_ + "'"
+                + ((gender_ !="")?" AND gender = '"+gender_+"' ":"")
+                + ((isHavePlace_ !="")?((isHavePlace_ == "True")?" AND place IS NOT NULL ":" AND place IS NULL "):"")
+                + ((yos_.Count!=0)?" AND yos IN "+yosList+" ":"");
+            return new SqlCommand(sql, conn);
+        }
+        public SqlCommand buildOrderCommand()
+        {
+            string yosList = "(";
+            foreach(int i in yos_)
+                yosList += i.ToString() + ",";
+            yosList = yosList.Substring(0,yosList.Length-1)+")";
+            string sql = "select Student.name, Student.rbook, Student.faculty, Room.number, Floor.corpus from Student " +
+                         "full join Place on Place.id = Student.place " +
+                         "full join Room on Room.id = Place.room " +
+                         "full join Floor on Floor.id = Room.floor " +
+                         "where Student.faculty = '" + faculty_ + "'" +
+                         ((gender_ != "") ? " AND gender = '" + gender_ + "' " : "") +
+                         ((isHavePlace_ != "") ? ((isHavePlace_ == "True") ? " AND place IS NOT NULL " : " AND place IS NULL ") : "") +
+                         ((yos_.Count != 0) ? " AND yos IN " + yosList + " " : "");
+            return new SqlCommand(sql, conn);
+        }
+        private string faculty_, gender_;
+        List<int> yos_;
+        string isHavePlace_;
+
+    }
+    class RenameListCommand : SqlCommandBuilder
+    {
+        public RenameListCommand(string oldDescription, string newDescription, SqlConnection connection)
+        {
+            new_ = newDescription;
+            old_ = oldDescription;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "UPDATE Lists SET description='" + new_ + "' WHERE description = '" + old_ + "'";
+            return new SqlCommand(sql, conn);
+        }
+        private string old_, new_;
+    }
+    class GetListIDCommand : SqlCommandBuilder
+    {
+        public GetListIDCommand(string description, SqlConnection connection)
+        {
+            desc_ = description;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "SELECT id FROM Lists WHERE description = '" + desc_ + "'";
+            return new SqlCommand(sql, conn);
+        }
+        private string desc_;
+    }
+    class GetListDescriptionCommand : SqlCommandBuilder
+    {
+        public GetListDescriptionCommand(int listID, SqlConnection connection)
+        {
+            listID_ = listID;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "SELECT description FROM Lists WHERE id = " + listID_;
+            return new SqlCommand(sql, conn);
+        }
+        private int listID_;
+    }
+    class RemoveListCommand : SqlCommandBuilder
+    {
+        public RemoveListCommand(int ID, SqlConnection connection)
+        {
+            id = ID;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {   
+            new SqlCommand("DELETE FROM RT_Student_Lists WHERE idList = " + id, conn).ExecuteNonQuery();
+            string sql = "DELETE FROM Lists WHERE id = " + id;
+            return new SqlCommand(sql, conn);
+        }
+        private int id;
+    }
+
+    class CreateSettleListCommand : SqlCommandBuilder
+    {
+        public CreateSettleListCommand(string description, StringDictionary studentPlaces, SqlConnection connection)
+        {
+            description_ = description;
+            studentPlaces_ = studentPlaces;
+            conn = connection;
+            DateTime dt = DateTime.Now;
+            date_ = dt.Year.ToString() + "-" + dt.Month.ToString() + "-" + dt.Day.ToString() + " " +
+                    dt.Hour.ToString() + ":" + dt.Minute.ToString() + ":" + dt.Second.ToString();
+
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "INSERT INTO Lists (type, date, author, description) VALUES ('True', CONVERT (smalldatetime, '" + date_ + "',120), '" +
+                         mainForm.name + "', '" + description_ + "')";
+            new SqlCommand(sql, conn).ExecuteNonQuery();
+            int listID = Convert.ToInt32(SqlCommandBuilder.getQueryResult(new GetListIDCommand(description_, conn).buildCommand()).getValue(0, 0));
+            string rBooks = "";
+            string[] rBooksArray = new string[studentPlaces_.Keys.Count]; 
+            studentPlaces_.Keys.CopyTo(rBooksArray, 0);
+            foreach (string currentStr in rBooksArray)
+            {
+                rBooks += "'" + currentStr + "', ";
+            }
+            rBooks = rBooks.Substring(0, rBooks.Length - 2);
+
+            sql = "SELECT id, rbook FROM Student WHERE rbook in (" + rBooks + ")";
+            QueryResult qr = SqlCommandBuilder.getQueryResult(new SqlCommand(sql, conn));
+            string values = "";
+
+            for (int i = 0; i < qr.getRowCount(); i++)
+                values += qr.getValue(i, 0) + ", " + listID + ", " + studentPlaces_[qr.getValue(i, 1)] + "), (";
+            values = values.Substring(0, values.Length - 4);
+            sql = "INSERT INTO RT_Student_Lists (student, idList, place) VALUES (" + values + ")";
+            return new SqlCommand(sql, conn);
+        }
+        private StringDictionary studentPlaces_;
+        private string description_;
+        private string date_;
+    }
+
+    class AddListCommand : SqlCommandBuilder
+    {
+        public AddListCommand(bool type, DateTime date, string description, SqlConnection connection)
+        {
+            type_ = type;
+            date_ = date.Year.ToString() + "-" + date.Month.ToString() + "-" + date.Day.ToString() + " " +
+                    date.Hour.ToString() + ":" + date.Minute.ToString() + ":" + date.Second.ToString();
+            desc_ = description;
+            conn = connection;            
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "INSERT INTO Lists (type, date, author, description) VALUES (" + ((type_) ? "'True', " : "'False', ") + "CONVERT (smalldatetime, '" + date_ + "',120), '" +
+                         mainForm.name + "', '" + desc_ + "')";
+            return new SqlCommand(sql, conn);
+        }        
+        private bool type_;
+        private string date_, desc_;
+    }
+    class SetupListLinksCommand : SqlCommandBuilder
+    {
+        public SetupListLinksCommand(string description, List<string> rBooksEnum, SqlConnection connection)
+        {   
+            desc_ = description;
+            rBooksEnum_ = rBooksEnum;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            int listID = Convert.ToInt32(SqlCommandBuilder.getQueryResult(new GetListIDCommand(desc_, conn).buildCommand()).getValue(0,0));
+            string rBooks = "";
+            foreach (string currentStr in rBooksEnum_)
+            {
+                rBooks += "'" + currentStr + "', ";
+            }
+            rBooks = rBooks.Substring(0, rBooks.Length - 2);
+            string sql = "SELECT id place FROM Student WHERE rbook in (" + rBooks + ")";
+            QueryResult qr = SqlCommandBuilder.getQueryResult(new SqlCommand(sql, conn));
+            string values = "";
+            for (int i = 0; i < qr.getRowCount(); i++)
+                values += qr.getValue(i, 0) + ", " + listID + "), (";
+            values = values.Substring(0, values.Length - 4);
+            sql = "INSERT INTO RT_Student_Lists (student, idList) VALUES (" + values + ")";
+
+            return new SqlCommand(sql, conn);
+        }
+        private string desc_;
+        private List<string> rBooksEnum_;
+    }
+    class ClearListCommand : SqlCommandBuilder
+    { 
+        public ClearListCommand(int ID, SqlConnection connection)
+        {
+            id = ID;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {   
+            string sql = "DELETE FROM RT_Student_Lists WHERE idList = " + id;
+            return new SqlCommand(sql, conn);
+        }
+        private int id;
+    }
+    class AddOffenseCommand : SqlCommandBuilder
+    {
+        public AddOffenseCommand(string type, int listID, string description, SqlConnection connection)
+        {
+            listID_ = listID;
+            type_ = type;
+            desc_ = description;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "INSERT INTO Offense (type, idList, description) VALUES ('" + type_ + "', " + listID_.ToString() + ",'" + desc_ + "')";
+            new SqlCommand(sql, conn).ExecuteNonQuery();
+            sql = "UPDATE Lists SET description = 'Нарушение №" +
+                  (new SqlCommand("SELECT id FROM Offense WHERE idList = " + listID_.ToString(), conn).ExecuteScalar()).ToString() + "' WHERE " +
+                  "id = " + listID_.ToString();
+
+            return new SqlCommand(sql, conn);
+        }
+        int listID_;
+        string type_, desc_;
+    }
+    class GetOffenseDescTypeListCommand : SqlCommandBuilder
+    {
+        public GetOffenseDescTypeListCommand(string author, SqlConnection connection)
+        {
+            author_ = author;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "select Lists.description, Offense.type from Lists " +
+                         "full join Offense on Offense.idList = Lists.id " +
+                         "where Lists.author = '" + author_ + "' and Lists.type = 'True' and substring(Lists.description, 1, 9) = 'Нарушение'";
+            return new SqlCommand(sql, conn);
+        }
+        private string author_;
+    }
+    class RemoveOffenseCommand : SqlCommandBuilder
+    {
+        public RemoveOffenseCommand(string listDescription, SqlConnection connection)
+        {
+            desc_ = listDescription;
+            conn = connection;
+        }
+        public override SqlCommand buildCommand()
+        {
+            string sql = "DECLARE @idList INT; " +
+                         "SELECT @idList = Lists.id FROM Lists WHERE Lists.description = '" + desc_ + "'; " +
+                         "DELETE FROM Offense WHERE Offense.idList = @idList; " +
+                         "DELETE FROM RT_Student_Lists WHERE RT_Student_Lists.idList = @idList; " +
+                         "DELETE FROM Lists WHERE Lists.id = @idList;";
+            
+            return new SqlCommand(sql, conn);
+        }
+        private string desc_;
     }
 }

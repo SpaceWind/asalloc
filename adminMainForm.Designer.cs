@@ -149,6 +149,7 @@
             // userList
             // 
             this.userList.AccessibleName = "userList";
+            this.userList.AllowUserToAddRows = false;
             this.userList.AllowUserToOrderColumns = true;
             this.userList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 

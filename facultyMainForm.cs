@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
-//using System.Windows.Media;
 using System.Drawing.Drawing2D;
 
 namespace ASAlloc
@@ -25,6 +24,7 @@ namespace ASAlloc
             this.Text = mainForm.name;
             this.studentListComboBox.Text = this.studentListComboBox.Items[0].ToString();
             this.placeComboBox.Text = this.placeComboBox.Items[2].ToString();
+            setupButtonsEnabledProperty(tabDescriptor.tabType.noTab);
         }
 
         private void facultyMainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -52,7 +52,6 @@ namespace ASAlloc
         {
             SqlConnection objConn = mainForm.createDBConnection();
             treeStudents.Nodes.Clear();
-            TreeNode publicNode = new TreeNode("Публичные списка");
 
             QueryResult qr = SqlCommandBuilder.getQueryResult(
                         new SelectAllRowsByTwoColumnsCommand("Lists", "Lists.description", "type", "False", "author", mainForm.name,objConn).buildCommand());
@@ -63,10 +62,12 @@ namespace ASAlloc
                 privateLists.Add(tempNode);
             }
             var privateNodes = new TreeNode("Личные списки",privateLists.ToArray());
+            privateNodes.ExpandAll();
             treeStudents.Nodes.Add(privateNodes);
 
             List<TreeNode> userListsNode = new List<TreeNode>();
-            qr = SqlCommandBuilder.getQueryResult(new GetAllUsersExceptAdminCommand(objConn).buildCommand());
+            List<TreeNode> offenseListsNode = new List<TreeNode>();
+            qr = SqlCommandBuilder.getQueryResult(new GetFacultyListCommand(objConn).buildCommand());
             for (int i = 0; i < qr.getRowCount(); i++)
             {
                 QueryResult publicListsQuery = SqlCommandBuilder.getQueryResult(
@@ -76,12 +77,47 @@ namespace ASAlloc
                 List<TreeNode> publicLists = new List<TreeNode>();
                 for (int j = 0; j < publicListsQuery.getRowCount(); j++)
                 {
+                    if(publicListsQuery.getValue(j, 0).Contains("Нарушение")) continue;
                     var tempNode = new TreeNode(publicListsQuery.getValue(j, 0));
                     publicLists.Add(tempNode);
                 }
-                userListsNode.Add(new TreeNode(qr.getValue(i,0),publicLists.ToArray()));
+                if (publicLists.Count != 0) 
+                    userListsNode.Add(new TreeNode(qr.getValue(i, 0), publicLists.ToArray()));
+
+                QueryResult offenseListsQuery = SqlCommandBuilder.getQueryResult(new GetOffenseDescTypeListCommand(qr.getValue(i, 0), objConn).buildCommand());
+                if (offenseListsQuery.getRowCount() == 0)
+                    continue;
+                List<TreeNode> userOffenseNode = new List<TreeNode>();
+                List<TreeNode> billOffenseNode = new List<TreeNode>();
+                List<TreeNode> propertyOffenseNode = new List<TreeNode>();
+                List<TreeNode> regimeOffenseNode = new List<TreeNode>();
+                List<TreeNode> otherOffenseNode = new List<TreeNode>();
+                for (int j = 0; j < offenseListsQuery.getRowCount(); j++)
+                {
+                    var tempNode = new TreeNode(offenseListsQuery.getValue(j, 0));
+                    string tempType = offenseListsQuery.getValue(j, 1);
+                    if (tempType == "Финансовая задолжность")
+                        billOffenseNode.Add(tempNode);
+                    else if (tempType == "Порча имущества")
+                        propertyOffenseNode.Add(tempNode);
+                    else if (tempType == "Нарушение режима общежития")
+                        regimeOffenseNode.Add(tempNode);
+                    else otherOffenseNode.Add(tempNode);
+                }
+                if(billOffenseNode.Count != 0)
+                    userOffenseNode.Add(new TreeNode("Финансовая задолжность", billOffenseNode.ToArray()));
+                if(propertyOffenseNode.Count != 0)
+                    userOffenseNode.Add(new TreeNode("Порча имущества", propertyOffenseNode.ToArray()));
+                if(regimeOffenseNode.Count != 0)
+                    userOffenseNode.Add(new TreeNode("Нарушение режима общежития", regimeOffenseNode.ToArray()));
+                if(otherOffenseNode.Count != 0)
+                    userOffenseNode.Add(new TreeNode("Прочее", otherOffenseNode.ToArray()));
+                if (userOffenseNode.Count != 0)
+                    offenseListsNode.Add(new TreeNode(qr.getValue(i, 0), userOffenseNode.ToArray()));
             }
-            treeStudents.Nodes.Add(new TreeNode("Публичные списка", userListsNode.ToArray()));
+            treeStudents.Nodes.Add(new TreeNode("Публичные списки", userListsNode.ToArray()));
+            treeStudents.Nodes.Add(new TreeNode("Нарушения", offenseListsNode.ToArray()));
+
             objConn.Close();
         }
 
@@ -165,12 +201,13 @@ namespace ASAlloc
                         {
                             List<TreeNode> rooms = new List<TreeNode>();
                             for (int roomIndex = 0; roomIndex < qrRooms.getRowCount(); roomIndex++)
-                                rooms.Add(new TreeNode("Комната #" + qrRooms.getValue(roomIndex, "number").ToString()));
-                            floors.Add(new TreeNode("Этаж #" + qrFloors.getValue(floorIndex, "floor_level").ToString(), rooms.ToArray()));
-
+                                rooms.Add(new TreeNode("Комната #" + qrRooms.getValue(roomIndex, "number").ToString() +
+                                                       " [" + qrRooms.getValue(roomIndex, "current_places").ToString() +
+                                                       "/" + qrRooms.getValue(roomIndex, "max_places").ToString() + "]"));
+                            floors.Add(new TreeNode("Этаж #" + qrFloors.getValue(floorIndex, "floor_level").ToString() + " [" + rooms.Count() + "]", rooms.ToArray()));
                         }
                     }
-                    TreeNode buildingNode = new TreeNode("Строение #" + (i+1).ToString(), floors.ToArray());
+                    TreeNode buildingNode = new TreeNode("Строение #" + (i+1).ToString() + " [" + floors.Count() +"]", floors.ToArray());
                     treePlaces.Nodes.Add(buildingNode);
                 }
             }
@@ -191,8 +228,25 @@ namespace ASAlloc
                 setupPlaceNode(true, true);
         }
 
+        private tabDescriptor.tabType parseListName(string owner, string name)
+        {
+            bool isOwnList = owner == mainForm.name;
+            if (!isOwnList)
+                return tabDescriptor.tabType.unsavedPrivateListTab;
+            if (name.IndexOf("Заселение") == 0)
+                return tabDescriptor.tabType.publicListInTab;
+            if (name.IndexOf("Выселение") == 0)
+                return tabDescriptor.tabType.publicListOutUnplannedTab;
+            if (name.IndexOf("Нарушение") == 0)
+                return tabDescriptor.tabType.violatorsListTab;
+            if (name.IndexOf("Приказ") == 0)
+                return tabDescriptor.tabType.orderListTab;
+            return tabDescriptor.tabType.unsavedPrivateListTab;
+        }
+
         private void treeStudents_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right) return;
             SqlConnection objConn = mainForm.createDBConnection();
             if (studentListComboBox.Text == "Студенты")
             {
@@ -213,12 +267,12 @@ namespace ASAlloc
                     qr = SqlCommandBuilder.getQueryResult(new SelectAllRowsByTwoColumnsCommand("Student", columnOrder, "faculty", faculty,
                                                                                                "yos", e.Node.Text.Replace("Курс ", ""),
                                                                                                objConn).buildCommand());
-                    tabText = e.Node.Parent.Text + " : " + e.Node.Text + "  ";
+                    tabText = e.Node.Parent.Text + " : " + e.Node.Text;
                 }
                 qr.parseColumn(2, mainForm.colNames["gender"]);
                 qr.parseColumn(5, "НЕТ", "ДА");
                 qr.addToDataGridView(currentStudentList, mainForm.colNames["student"]);
-                string tabName = createNewTab(tabControl1, tabText, qr, faculty == mainForm.name,mainForm.colNames["student"]);
+                string tabName = createNewTab(tabControl1, tabText, qr, tabDescriptor.tabType.unsavedPrivateListTab, mainForm.colNames["student"]);
                 tabs[tabName].addColumnParser(2, mainForm.colNames["gender"]);
             }
             else if (studentListComboBox.Text == "Списки студентов")
@@ -229,24 +283,34 @@ namespace ASAlloc
                     {
                         currentStudentList.Rows.Clear();
                         QueryResult prList = SqlCommandBuilder.getQueryResult(new GetStudentListCommand(mainForm.name, false, e.Node.Text, objConn).buildCommand());
-                        prList.addToDataGridView(currentStudentList,mainForm.colNames["student"]);
-
-                        string tabText = e.Node.Text + "  ";
                         prList.parseColumn(2, mainForm.colNames["gender"]);
-                        string tabName = createNewTab(tabControl1, tabText, prList,true,mainForm.colNames["student"]);
+                        prList.parseColumn(5, "НЕТ", "ДА");
+                        prList.addToDataGridView(currentStudentList, mainForm.colNames["student"]);
+                        string tabName = createNewTab(tabControl1, e.Node.Text, prList, tabDescriptor.tabType.savedPrivateListTab, mainForm.colNames["student"]);
                         tabs[tabName].addColumnParser(2, mainForm.colNames["gender"]);
                     }
-                    else if (e.Node.Parent.Parent != null)
+                    else if (e.Node.Parent.Parent != null && e.Node.Parent.Parent.Text != "Нарушения")
                     {
+                        if (e.Node.Parent.Parent.Parent != null)
+                        {   
+                            currentStudentList.Rows.Clear();
+                            QueryResult offenseList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildCommand());                            
+                            offenseList.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
+                            createNewTab(tabControl1, e.Node.Text, offenseList, parseListName(e.Node.Parent.Parent.Text,e.Node.Text), mainForm.colNames["order"]);
+                            return;
+                        }
                         currentStudentList.Rows.Clear();
-                        QueryResult pubList = SqlCommandBuilder.getQueryResult(new GetStudentListCommand(e.Node.Parent.Text, true, e.Node.Text, objConn).buildCommand());
-                        pubList.addToDataGridView(currentStudentList);
+                        bool settlePublicList = e.Node.Text.IndexOf("Заселение (") == 0;
+                        QueryResult pubList;
+                        if (!settlePublicList)
+                            pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildReadPlaceFromStudentCommand());
+                        else
+                            pubList = SqlCommandBuilder.getQueryResult(new GetPublicListCommand(e.Node.Text, objConn).buildCommand());
+                        pubList.addToDataGridView(currentStudentList, mainForm.colNames["order"]);                        
 
-                        string tabText = e.Node.Text + "  ";
-                        createNewTab(tabControl1, tabText, pubList,false,mainForm.colNames["student"]);
+                        createNewTab(tabControl1, e.Node.Text, pubList, parseListName(e.Node.Parent.Text,e.Node.Text), mainForm.colNames["order"]);
                     }
                 }
-
             }
             else if (studentListComboBox.Text == "Приказы")
             {
@@ -257,19 +321,72 @@ namespace ASAlloc
                                      dt.Hour.ToString() + ":" + dt.Minute.ToString() + ":"+ dt.Second.ToString();
                     QueryResult qr = SqlCommandBuilder.getQueryResult(new GetOrderCommand(newDate, objConn).buildCommand());
                     qr.addToDataGridView(currentStudentList,mainForm.colNames["order"]);
-                    createNewTab(tabControl1, "Приказ от " + e.Node.Text.Substring(0, 10) + "  ", qr, false, mainForm.colNames["order"]);
+                    createNewTab(tabControl1, "Приказ от " + e.Node.Text.Substring(0, 10), qr, tabDescriptor.tabType.orderListTab, mainForm.colNames["order"]);
                 }
             }
 
             objConn.Close();
         }
 
-        private string createNewTab(TabControl ctrl, string text, QueryResult content, bool isEditable, StringDictionary parser)
+        private void setupButtonsEnabledProperty(tabDescriptor.tabType type)
+        {
+            switch (type)
+            {
+                case tabDescriptor.tabType.noTab:
+                    setupButtonsEnabledProperty(false, false, false, false, false, false);
+                    break;
+                case tabDescriptor.tabType.unsavedPrivateListTab:
+                    setupButtonsEnabledProperty(true, true, false, false, false, false);
+                    break;
+                case tabDescriptor.tabType.savedPrivateListTab:
+                    setupButtonsEnabledProperty(true, true, true, true, true, false);
+                    break;
+                case tabDescriptor.tabType.defaultPublicListTab:
+                    setupButtonsEnabledProperty(false, true, false, false, false, false);
+                    break;
+                case tabDescriptor.tabType.publicListInTab:
+                    setupButtonsEnabledProperty(true, true, false, false, false, true);
+                    break;
+                case tabDescriptor.tabType.publicListOutTab:
+                    setupButtonsEnabledProperty(false, true, false, false, false, true);
+                    break;
+                case tabDescriptor.tabType.publicListOutUnplannedTab:
+                    setupButtonsEnabledProperty(true, true, false, false, false, true);
+                    break;
+                case tabDescriptor.tabType.violatorsListTab:
+                    setupButtonsEnabledProperty(false, true, false, false, false, false);
+                    break;
+                case tabDescriptor.tabType.orderListTab:
+                    setupButtonsEnabledProperty(false, true, false, false, false, mainForm.role == 2);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void closeTab(object sender)
+        {
+            TabControl tb = (TabControl)sender;
+            tabs.Remove(tb.TabPages[tb.SelectedIndex].Name);
+            tb.TabPages.RemoveAt(tb.SelectedIndex);
+            string senderName = tb.Name;
+            if (tb.TabCount == 0)
+            {
+                if (senderName == "tabControl1")
+                    currentStudentList.Columns.Clear();
+                else if (senderName == "tabControl2")
+                    currentPlaceList.Columns.Clear();
+                setupButtonsEnabledProperty(tabDescriptor.tabType.noTab);
+            }
+        }
+
+        private string createNewTab(TabControl ctrl, string text, QueryResult content, tabDescriptor.tabType type, StringDictionary parser)
         {
             TabPage newPage = new TabPage(text);
             string tabName = "tabPage_" + tabCounter.ToString();
             newPage.Name = tabName;
-            tabDescriptor tb = new tabDescriptor(content, isEditable, parser);
+            tabDescriptor tb = new tabDescriptor(content, type, parser);
+            setupButtonsEnabledProperty(type);
             tabs[tabName] = tb;
             ctrl.TabPages.Add(newPage);
             ctrl.SelectTab(tabName);
@@ -287,11 +404,13 @@ namespace ASAlloc
                 QueryResult qr = tabs[e.TabPage.Name].qr;
                 if (qr != null)
                     qr.addToDataGridView(currentStudentList,tabs[e.TabPage.Name].columnNameParser);
+                setupButtonsEnabledProperty(tabs[e.TabPage.Name].type_);
             }
         }
 
         private void treePlaces_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right) return;
             currentPlaceList.Rows.Clear();
             QueryResult qr;
             SqlConnection objConn = mainForm.createDBConnection();
@@ -307,34 +426,45 @@ namespace ASAlloc
                     isPlaceChosen = true;
                     columnOrder = "Place.id, Place.state, Room.number, Floor.floor_level, Floor.corpus, Student.faculty, Student.yos, Student.name";
 
-                    qr = SqlCommandBuilder.getQueryResult(new GetPlaceRowCommand(e.Node.Text.Replace("Комната #", ""),
-                                                                                 e.Node.Parent.Text.Replace("Этаж #", ""),
-                                                                                 e.Node.Parent.Parent.Text.Replace("Строение #", ""), columnOrder, objConn).buildCommand());
-                    tabText = e.Node.Parent.Parent.Text + " : " + e.Node.Parent.Text + " : " + e.Node.Text + "  ";
+                    List<string> tabTextParts = new List<string>();
+                    tabTextParts.Add(e.Node.Text.Split(new char[] { '[' }).First().Replace("Комната #", "").Trim());
+                    tabTextParts.Add(e.Node.Parent.Text.Split(new char[] { '[' }).First().Replace("Этаж #", "").Trim());
+                    tabTextParts.Add(e.Node.Parent.Parent.Text.Split(new char[] { '[' }).First().Replace("Строение #", "").Trim());
+                    
+                    qr = SqlCommandBuilder.getQueryResult(new GetPlaceRowCommand(tabTextParts[0],
+                                                                                 tabTextParts[1],
+                                                                                 tabTextParts[2], 
+                                                                                 columnOrder, objConn).buildCommand());
+                    tabText = "C #" + tabTextParts[2] + ":Э #" + tabTextParts[1] + ":Комната #" + tabTextParts[0];
                 }
                 else
                 {                    
                     columnOrder = "Room.id, Room.number, Room.type, Room.max_places, Room.current_places, Floor.floor_level, Floor.corpus";
-                  
-                    qr = SqlCommandBuilder.getQueryResult(new GetRoomsRowCommand(Convert.ToInt32(e.Node.Parent.Text.Replace("Строение #", "")),
-                                                                                 Convert.ToInt32(e.Node.Text.Replace("Этаж #", "")), columnOrder, objConn).buildCommand());
-                    tabText = e.Node.Parent.Text + " : " + e.Node.Text + "  ";
+
+                    List<string> tabTextParts = new List<string>();
+                    tabTextParts.Add(e.Node.Text.Split(new char[] { '[' }).First().Replace("Этаж #", "").Trim());
+                    tabTextParts.Add(e.Node.Parent.Text.Split(new char[] { '[' }).First().Replace("Строение #", "").Trim());
+
+                    qr = SqlCommandBuilder.getQueryResult(new GetRoomsRowCommand(Convert.ToInt32(tabTextParts[1]),
+                                                                                 Convert.ToInt32(tabTextParts[0]), 
+                                                                                 columnOrder, objConn).buildCommand());
+                    tabText = "C #" + tabTextParts[1] + ":Этаж #" + tabTextParts[0];
                 }
             }
             else 
             {
                 columnOrder = "Room.id, Room.number, Room.type, Room.max_places, Room.current_places, Floor.floor_level, Floor.corpus";
 
-                qr = SqlCommandBuilder.getQueryResult(new GetRoomsRowCommand(Convert.ToInt32(e.Node.Text.Replace("Строение #", "")), columnOrder, objConn).buildCommand());
-                tabText = e.Node.Text + "  ";
+                qr = SqlCommandBuilder.getQueryResult(new GetRoomsRowCommand(Convert.ToInt32(e.Node.Text.Split(new char[] { '[' }).First().Replace("Строение #", "").Trim()), 
+                                                                             columnOrder, objConn).buildCommand());
+                tabText = e.Node.Text.Split(new char[] { '[' }).First().Trim();
             }
 
             string parserName = isPlaceChosen ? "place" : "room";
             qr.parseColumn(1, mainForm.colNames["place_state"]);
             qr.addToDataGridView(currentPlaceList, mainForm.colNames[parserName]);
-
-            createNewTab(tabControl2, tabText, qr, mainForm.role == 2, mainForm.colNames[parserName]);
-
+            createNewTab(tabControl2, tabText, qr, tabDescriptor.tabType.placeTab, mainForm.colNames[parserName]);
+            //-------------------------------------------------------------------------------------------------------------------
             objConn.Close();
         }
 
@@ -359,7 +489,7 @@ namespace ASAlloc
                     tabTextArea = (RectangleF)((TabControl)sender).GetTabRect(nIndex);
                     LinearGradientBrush br = new LinearGradientBrush(tabTextArea, SystemColors.ControlLightLight,SystemColors.Control, LinearGradientMode.Vertical);
                     e.Graphics.FillRectangle(br, e.Bounds);
-                    using (Bitmap bmp = new Bitmap(ASAlloc.Properties.Resources.close))
+                    using (Bitmap bmp = new Bitmap(ASAlloc.Properties.Resources.close_2))
                     {
                         e.Graphics.DrawImage(bmp, tabTextArea.X + tabTextArea.Width - 13, 5, 10, 10);
                     }
@@ -389,6 +519,17 @@ namespace ASAlloc
             }
         }
 
+        private void setupButtonsEnabledProperty(bool addStudentToListButton, bool saveAsButton, bool saveButton,
+                                                 bool removeListButton, bool renameListButton, bool postListButton)
+        {
+            toolStripButton4.Enabled = saveAsButton;
+            toolStripButton5.Enabled = removeListButton;
+            toolStripButton6.Enabled = addStudentToListButton;
+            toolStripButton7.Enabled = saveButton;
+            toolStripButton8.Enabled = renameListButton;
+            toolStripButton10.Enabled = postListButton;
+        }
+
         private void tabControl1_MouseDown(object sender, MouseEventArgs e)
         {
             int selectedTab = ((TabControl)sender).SelectedIndex;
@@ -400,15 +541,8 @@ namespace ASAlloc
                 Point pt = new Point(e.X, e.Y);
                 if (tabTextArea.Contains(pt))
                 {
-                    tabs.Remove(((TabControl)sender).TabPages[((TabControl)sender).SelectedIndex].Name);
-                    ((TabControl)sender).TabPages.RemoveAt(((TabControl)sender).SelectedIndex);
                     isCurrentTabClosed = true;
-                    string senderName = ((TabControl)sender).Name;
-                    if (((TabControl)sender).TabCount == 0)
-                        if (senderName == "tabControl1")
-                            currentStudentList.Columns.Clear();
-                        else if (senderName == "tabControl2")
-                            currentPlaceList.Columns.Clear();
+                    closeTab(sender);
                 }
             }
             if (!isCurrentTabClosed)
@@ -425,7 +559,6 @@ namespace ASAlloc
                     else
                         ((TabControl)sender).SelectTab(prevTabIndex);
                 }
-
             }
         }
 
@@ -443,9 +576,15 @@ namespace ASAlloc
                 MessageBox.Show("СТУДЕНТ ДОБАВЛЕН");
             }
         }
-        private void deleteStudentButton_Click(object sender, EventArgs e)
+        private void addNewListButton_Click(object sender, EventArgs e)
         {
-
+            AddStudent dlg = new AddStudent();
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            dlg.ShowDialog();
+            QueryResult qr = dlg.getResult();
+            createNewTab(tabControl1, "Новый список", qr, tabDescriptor.tabType.unsavedPrivateListTab, new StringDictionary());
+            currentStudentList.Rows.Clear();
+            qr.addToDataGridView(currentStudentList);
         }
         private void currentStudentList_CellMouseRClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -457,15 +596,345 @@ namespace ASAlloc
                 contxtTabMenu1.Show(Cursor.Position);
             }
         }  
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            if (currentStudentList.RowCount < 1)
+            {
+                MessageBox.Show("Сохранение пустого списка запрещено!", "Список пуст", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            listNameDialog lnd = new listNameDialog(tabControl1.SelectedTab.Text);
+            lnd.StartPosition = FormStartPosition.CenterParent;
+            var result = lnd.ShowDialog();
+            if(result == System.Windows.Forms.DialogResult.OK)
+            {
+                SqlConnection objConn = mainForm.createDBConnection();
+                DateTime DT = DateTime.Now;
+                string listName = (lnd.listName.Trim() == "") ? "список " + mainForm.name + " от: " + 
+                                                                DT.Year.ToString() + "-" + DT.Month.ToString() + "-" + DT.Day.ToString() + " " +
+                                                                DT.Hour.ToString() + ":" + DT.Minute.ToString() + ":" + DT.Second.ToString() : lnd.listName;
+                QueryResult qr = SqlCommandBuilder.getQueryResult(new GetListIDCommand(listName, objConn).buildCommand());
+
+                if (qr.getRowCount() != 0)
+                {
+                    var mbResult = MessageBox.Show("Заменить существующий список?", "Список существует", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    if (mbResult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        objConn.Close();
+                        return;
+                    }
+                    new RemoveListCommand(Convert.ToInt32(qr.getValue(0,0)), objConn).buildCommand().ExecuteNonQuery();
+                }
+                List<string> rBooksEnum = new List<string>();
+                for (int i = 0; i < currentStudentList.RowCount; i++)
+                    rBooksEnum.Add(currentStudentList.Rows[i].Cells[1].Value.ToString().Trim());
+
+                new AddListCommand(false, DateTime.Now, listName, objConn).buildCommand().ExecuteNonQuery();
+                new SetupListLinksCommand(listName, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
+                tabControl1.SelectedTab.Text = listName;
+                tabs[tabControl1.SelectedTab.Name].type_ = tabDescriptor.tabType.savedPrivateListTab;
+                setupButtonsEnabledProperty(tabDescriptor.tabType.savedPrivateListTab);
+                setupListsNodes();
+                objConn.Close();
+                studentListComboBox.Text = studentListComboBox.Items[1].ToString();
+                MessageBox.Show("Список сохранён");
+            }
+        }
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.TabPages.Count == 0)
+                return;
+            string listName = tabControl1.SelectedTab.Text;
+            SqlConnection objConn = mainForm.createDBConnection();
+            new RemoveListCommand(Convert.ToInt32((new GetListIDCommand(listName, objConn)).buildCommand().ExecuteScalar().ToString()), objConn).buildCommand().ExecuteNonQuery();
+            closeTab(tabControl1);
+            if (prevTabIndex != 0)
+            {
+                if (tabControl1.TabCount == prevTabIndex)
+                {
+                    tabControl1.SelectTab(prevTabIndex - 1);
+                    prevTabIndex -= 1;
+                }
+                else
+                    tabControl1.SelectTab(prevTabIndex);
+            }
+            setupListsNodes();
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            var tabType = tabs[tabControl1.SelectedTab.Name].type_;
+            AddStudent dlg;
+            switch (tabType)
+            {
+                case tabDescriptor.tabType.publicListOutUnplannedTab:
+                    dlg = new AddStudent(AddStudent.addStudentDialogType.outType);
+                    break;
+                default:
+                    dlg = new AddStudent();
+                    break;
+            }
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            dlg.setResult(tabs[tabControl1.SelectedTab.Name].qr);
+            dlg.ShowDialog();
+            tabs[tabControl1.SelectedTab.Name].qr = dlg.getResult();
+            currentStudentList.Rows.Clear();
+            dlg.getResult().addToDataGridView(currentStudentList);
+        }
+
+        private void toolStripButton7_Click(object sender, EventArgs e)
+        {
+            if (currentStudentList.RowCount < 1)
+            {
+                MessageBox.Show("Сохранение пустого списка запрещено!", "Список пуст", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            SqlConnection objConn = mainForm.createDBConnection();
+            string listName = currentTabText();
+            
+            new RemoveListCommand(Convert.ToInt32(new GetListIDCommand(listName,objConn).buildCommand().ExecuteScalar().ToString()), objConn).buildCommand().ExecuteNonQuery();
+            List<string> rBooksEnum = new List<string>();
+            for (int i = 0; i < currentStudentList.RowCount; i++)
+                rBooksEnum.Add(currentStudentList.Rows[i].Cells[1].Value.ToString().Trim());
+
+            new AddListCommand(false, DateTime.Now, listName, objConn).buildCommand().ExecuteNonQuery();
+            new SetupListLinksCommand(listName, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
+            setupButtonsEnabledProperty(tabDescriptor.tabType.savedPrivateListTab);
+            setupListsNodes();
+            objConn.Close();
+            MessageBox.Show("Список сохранён");
+        }    
+        private string currentTabText()
+        {
+            return tabControl1.SelectedTab.Text;
+        }
         private void deleteStudent_Click(object sender, EventArgs e)
         {
-          //
+            foreach (DataGridViewRow dr in currentStudentList.SelectedRows)
+                currentStudentList.Rows.Remove(dr);
+            tabs[tabControl1.SelectedTab.Name].qr.fromDataGridView(currentStudentList, false, true);
+        } 
+        private void toolStripButton8_Click(object sender, EventArgs e)
+        {
+            listNameDialog dlg = new listNameDialog();
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            var result = dlg.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+                return;
+            SqlConnection objConn = mainForm.createDBConnection();
+            DateTime DT = DateTime.Now;
+            string listName = (dlg.listName.Trim() == "") ? "список " + mainForm.name + " от: " +
+                                                            DT.Year.ToString() + "-" + DT.Month.ToString() + "-" + DT.Day.ToString() + " " +
+                                                            DT.Hour.ToString() + ":" + DT.Minute.ToString() + ":" + DT.Second.ToString() : dlg.listName;
+            new RenameListCommand(currentTabText(), listName, objConn).buildCommand().ExecuteNonQuery();
+            tabControl1.SelectedTab.Text = listName;
+            setupListsNodes();
+
+        }
+        private void plannedOutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SqlConnection objConn = mainForm.createDBConnection();
+            QueryResult qr = SqlCommandBuilder.getQueryResult(new GetResidentsListCommand(false, objConn).buildCommand());
+
+            string listText = "Выселение (" + mainForm.name + ")";
+            qr.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
+            createNewTab(tabControl1, listText, qr, tabDescriptor.tabType.publicListOutTab, mainForm.colNames["order"]);
+            objConn.Close();
+        }
+
+        private void toolStripButton10_Click(object sender, EventArgs e)
+        {
+            if (currentStudentList.RowCount < 1)
+            {
+                MessageBox.Show("Публикация пустого списка запрещено!", "Список пуст", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            TabPage currentTab = tabControl1.SelectedTab;          
+            SqlConnection objConn = mainForm.createDBConnection();
+
+            List<string> rbooks = new List<string>();
+            for (int i = 0; i < tabs[currentTab.Name].qr.getRowCount(); i++)
+                rbooks.Add(tabs[currentTab.Name].qr.getValue(i, 1).Trim());
+
+            QueryResult qr = SqlCommandBuilder.getQueryResult(new GetListIDCommand(currentTabText(), objConn).buildCommand());
+            if (qr.getRowCount() != 0)
+            {
+                var mbResult = MessageBox.Show("Заменить существующий список?", "Список существует", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (mbResult == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    objConn.Close();
+                    return;
+                }
+                new ClearListCommand(Convert.ToInt32(qr.getValue(0, 0)), objConn).buildCommand().ExecuteNonQuery();
+            }
+            else
+                new AddListCommand(true, DateTime.Now, currentTabText(), objConn).buildCommand().ExecuteNonQuery();
+            new SetupListLinksCommand(currentTabText(), rbooks, objConn).buildCommand().ExecuteNonQuery();
+
+            studentListComboBox.Text = this.studentListComboBox.Items[1].ToString();
+            setupListsNodes();
+            treeStudents.Nodes[1].Expand();
+            for(int i=0; i<treeStudents.Nodes[1].Nodes.Count; i++)
+                if (treeStudents.Nodes[1].Nodes[i].Text == mainForm.name) 
+                { 
+                    treeStudents.Nodes[1].Nodes[i].Expand(); 
+                    break; 
+                }
+            objConn.Close();            
+        } 
+        private void contextDeleteListFromTreeStudent(object sender, EventArgs e)
+        {
+            var mbResult = MessageBox.Show("Вы уверены?", "Удаление списка", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+            if (mbResult == System.Windows.Forms.DialogResult.Cancel)
+                 return;
+
+            SqlConnection objConn = mainForm.createDBConnection();
+            new RemoveListCommand(Convert.ToInt32(new GetListIDCommand(treeStudents.SelectedNode.Text, objConn).buildCommand().ExecuteScalar().ToString()), 
+                                  objConn).buildCommand().ExecuteNonQuery();
+            if (treeStudents.SelectedNode.Parent.Text == "Личные списки")
+            {
+                setupListsNodes();
+                treeStudents.Nodes[0].Expand();
+            }
+            else
+            {
+                setupListsNodes();
+                treeStudents.Nodes[1].Expand();
+                TreeNode node = treeStudents.Nodes[1].Nodes.Cast<TreeNode>().Where(n => n.Text == mainForm.name).First();
+                if (node != null) node.Expand();
+            }
+            
+            objConn.Close();
+        }
+        private void contextDeleteOffense(object sender, EventArgs e)
+        {
+            var mbResult = MessageBox.Show("Вы уверены?", "Удаление списка", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+            if (mbResult == System.Windows.Forms.DialogResult.Cancel)
+                 return;
+
+            SqlConnection objConn = mainForm.createDBConnection();
+            new RemoveOffenseCommand(treeStudents.SelectedNode.Text, objConn).buildCommand().ExecuteNonQuery();
+
+            if(treeStudents.SelectedNode.Parent.Nodes.Count == 1)
+                treeStudents.SelectedNode.Parent.Remove();
+            else treeStudents.SelectedNode.Remove();
+            treeStudents.Refresh();            
+
+            objConn.Close();
+        }
+        private void treeStudents_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right && studentListComboBox.Text == "Списки студентов")
+            {
+                ((TreeView)sender).SelectedNode = e.Node;
+                if (e.Node.Parent != null)
+                {
+                    if (e.Node.Text.Contains("Нарушение") && e.Node.Parent.Parent != null)
+                    {
+                        if (e.Node.Parent.Parent.Text == mainForm.name)
+                        {
+                            ToolStripMenuItem tsmiDeleteList = new ToolStripMenuItem("Удалить нарушение");
+                            tsmiDeleteList.Click += contextDeleteOffense;
+                            tsmiDeleteList.Image = ASAlloc.Properties.Resources.close_2;
+                            var tsmTreeNodeClick = new ContextMenuStrip();
+                            tsmTreeNodeClick.Items.Add(tsmiDeleteList);
+                            tsmTreeNodeClick.Show(Cursor.Position);
+                        }
+                    }
+                    if (e.Node.Parent.Text == "Личные списки" || (e.Node.Parent.Text == mainForm.name && e.Node.Parent.Parent.Text == "Публичные списки")) 
+                    {
+                        ToolStripMenuItem tsmiDeleteList = new ToolStripMenuItem("Удалить список");
+                        tsmiDeleteList.Click += contextDeleteListFromTreeStudent;
+                        tsmiDeleteList.Image = ASAlloc.Properties.Resources.close_2;
+                        var tsmTreeNodeClick = new ContextMenuStrip();
+                        tsmTreeNodeClick.Items.Add(tsmiDeleteList);
+                        tsmTreeNodeClick.Show(Cursor.Position);
+                    }
+                }
+            }
+        } 
+        private void outToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SqlConnection objConn = mainForm.createDBConnection();
+
+            AddStudent addDialog = new AddStudent(AddStudent.addStudentDialogType.outType);
+            addDialog.StartPosition = FormStartPosition.CenterParent;
+            addDialog.ShowDialog();
+            
+            string listText = "Выселение (" + mainForm.name + ")";
+            var result = addDialog.getResult();
+            result.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
+            createNewTab(tabControl1, listText, result, tabDescriptor.tabType.publicListOutUnplannedTab, mainForm.colNames["order"]);
+            objConn.Close();
+        }
+        private void offenseButton_Click(object sender, EventArgs e)
+        {  
+            //форма с заданием соответствия нарушению
+            var dlg = new createOffence();
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            var dialogResult = dlg.ShowDialog();
+            if (dialogResult == System.Windows.Forms.DialogResult.Cancel) return;
+            QueryResult result = dlg.getStudents();
+            string desc = dlg.getDescription();
+            string type = dlg.getType();
+            SqlConnection objConn = mainForm.createDBConnection();
+
+            string listText = "Нарушение (" + mainForm.name + ")";
+            result.addToDataGridView(currentStudentList, mainForm.colNames["order"]);
+
+            List<string> rBooksEnum = new List<string>();
+            for (int i = 0; i < currentStudentList.RowCount; i++)
+                rBooksEnum.Add(currentStudentList.Rows[i].Cells[1].Value.ToString().Trim());
+            new AddListCommand(true, DateTime.Now, listText, objConn).buildCommand().ExecuteNonQuery();
+            int listID = Convert.ToInt32(new GetListIDCommand(listText, objConn).buildCommand().ExecuteScalar());
+            new SetupListLinksCommand(listText, rBooksEnum, objConn).buildCommand().ExecuteNonQuery();
+            new AddOffenseCommand(dlg.getType(), listID, dlg.getDescription(), objConn).buildCommand().ExecuteNonQuery();
+            listText = new GetListDescriptionCommand(listID, objConn).buildCommand().ExecuteScalar().ToString();
+            
+            createNewTab(tabControl1, listText, SqlCommandBuilder.getQueryResult(new GetPublicListCommand(listText, objConn).buildReadPlaceFromStudentCommand()), 
+                         tabDescriptor.tabType.violatorsListTab, mainForm.colNames["order"]);
+            studentListComboBox.Text = studentListComboBox.Items[1].ToString();
+            setupListsNodes();
+            treeStudents.Nodes[2].Expand();
+            treeStudents.Nodes[2].Nodes.Cast<TreeNode>().Where(n => n.Text == mainForm.name).First().Expand();
+            treeStudents.Nodes[2].Nodes.Cast<TreeNode>().Where(n => n.Text == mainForm.name).First().
+                                  Nodes.Cast<TreeNode>().Where(n => n.Text == dlg.getType()).First().Expand();
+
+            objConn.Close();
         } 
         /// <summary>
         /// ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
         private int prevTabIndex = -1;
         static private int tabCounter = 0;
-        private Dictionary<string, tabDescriptor> tabs = new Dictionary<string, tabDescriptor>();     
+        private Dictionary<string, tabDescriptor> tabs = new Dictionary<string, tabDescriptor>();
+
+
+        private void plannedInToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var resultList = new AllocatingSystem();
+            resultList.allocateStudents(mainForm.name);
+            //resultList.allocatedStudents.
+            //ранжирование
+        }
+
+        private void inToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //форма с заданием соответствия
+        }
+
+        private void editStudentButton_Click(object sender, EventArgs e)
+        {
+            SqlConnection objConn = mainForm.createDBConnection();
+            findStudentDialog fSDialog = new findStudentDialog(objConn);
+            if (currentStudentList.Rows.Count < 1)
+            {
+                fSDialog.StartPosition = FormStartPosition.CenterParent;
+                fSDialog.ShowDialog();
+            }
+
+            objConn.Close();
+        }       
     }
 }
