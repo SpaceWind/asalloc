@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.loginBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.passBox_1 = new System.Windows.Forms.TextBox();
@@ -40,6 +41,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.roleBox = new System.Windows.Forms.ComboBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTipPassError = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // loginBox
@@ -48,6 +51,7 @@
             this.loginBox.Name = "loginBox";
             this.loginBox.Size = new System.Drawing.Size(162, 20);
             this.loginBox.TabIndex = 0;
+            this.toolTip1.SetToolTip(this.loginBox, "Для роли \"Факультет\" используется аббревиатура факультета");
             // 
             // label1
             // 
@@ -82,6 +86,7 @@
             this.nameBox.Name = "nameBox";
             this.nameBox.Size = new System.Drawing.Size(162, 20);
             this.nameBox.TabIndex = 5;
+            this.toolTip1.SetToolTip(this.nameBox, "Лицо, ответственное за данную учётную запись");
             // 
             // button1
             // 
@@ -142,6 +147,7 @@
             // 
             // roleBox
             // 
+            this.roleBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.roleBox.FormattingEnabled = true;
             this.roleBox.Items.AddRange(new object[] {
             "Администратор",
@@ -151,7 +157,15 @@
             this.roleBox.Name = "roleBox";
             this.roleBox.Size = new System.Drawing.Size(162, 21);
             this.roleBox.TabIndex = 12;
-            this.roleBox.Text = "Факультет";
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.IsBalloon = true;
+            // 
+            // toolTipPassError
+            // 
+            this.toolTipPassError.Active = false;
+            this.toolTipPassError.IsBalloon = true;
             // 
             // addEditUserForm
             // 
@@ -194,5 +208,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox roleBox;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ToolTip toolTipPassError;
     }
 }

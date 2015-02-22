@@ -2,14 +2,16 @@
 tcp:10.62.222.193,49172
 tcp:(local)\ASALLOC,49172
 (local)\ASALLOC
-tcp:(lacal)\ASALLOC,49172
+tcp:192.168.0.103,49173
+tcp:192.168.0.100,49173
 /servers
 
 @securityMode
 Normal
 Integrated
 Integrated
-Integrated
+Normal
+Normal
 /securityMode
 
 @serverNames
@@ -17,6 +19,7 @@ PHOENIX PC (Debug:ФИТ)
 local
 local (no debug)
 ASAlloc_base
+port
 /serverNames
 
 #initCatalog
@@ -27,6 +30,7 @@ faculty
 faculty
 none
 none
+faculty
 /DebugMode
 
 @DebugLogin
@@ -34,6 +38,7 @@ none
 ФИТ
 
 
+ФИТ
 /DebugLogin
 
 #lastserver

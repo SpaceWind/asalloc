@@ -17,6 +17,8 @@ namespace ASAlloc
 {
     public partial class facultyMainForm : Form
     {
+        PlaceFundPlan placesPlan;
+
         public facultyMainForm()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -25,6 +27,12 @@ namespace ASAlloc
             this.studentListComboBox.Text = this.studentListComboBox.Items[0].ToString();
             this.placeComboBox.Text = this.placeComboBox.Items[2].ToString();
             setupButtonsEnabledProperty(tabDescriptor.tabType.noTab);
+
+            placesPlan = new PlaceFundPlan();
+            placesPlan.Dock = DockStyle.Fill;
+            placesPlan.Hide();
+
+            tableLayoutPanel4.Controls.Add(placesPlan);
         }
 
         private void facultyMainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -935,6 +943,26 @@ namespace ASAlloc
             }
 
             objConn.Close();
+        }
+
+        private void planView_Click(object sender, EventArgs e)
+        {
+            currentPlaceList.Hide();
+            placesPlan.Show();
+
+            planView.Enabled = false;
+            sheetView.Enabled = true;
+
+            ((PictureBox)placesPlan.Controls.Find("pictureBox1", true).First()).Image = Image.FromFile("1301916447365.bmp");
+        }
+
+        private void sheetView_Click(object sender, EventArgs e)
+        {
+            currentPlaceList.Show();
+            placesPlan.Hide();
+
+            planView.Enabled = true;
+            sheetView.Enabled = false;
         }       
     }
 }

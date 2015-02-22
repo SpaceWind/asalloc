@@ -96,6 +96,7 @@ namespace ASAlloc
         private void button1_Click(object sender, EventArgs e)
         {
             addEditUserForm aeuf = new addEditUserForm();
+            aeuf.Text = "Новый пользователь";
             aeuf.ShowDialog();
             if (aeuf.getState())
                 if(aeuf.getRole() != 1)
@@ -117,6 +118,7 @@ namespace ASAlloc
         {
             int index = userList.CurrentCell.RowIndex;
             addEditUserForm editForm = new addEditUserForm();
+            editForm.Text = "Пользователь";
             editForm.setInfo(userList.Rows[index].Cells[1].Value.ToString(),
                              userList.Rows[index].Cells[2].Value.ToString(),
                              getRoleByName(userList.Rows[index].Cells[3].Value.ToString()),

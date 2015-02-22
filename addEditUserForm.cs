@@ -16,6 +16,7 @@ namespace ASAlloc
         {
             this.StartPosition = FormStartPosition.CenterParent;
             InitializeComponent();
+            roleBox.Text = "Факультет";
         }
 
         public void setInfo(string login, string pass, int role, string name)
@@ -102,9 +103,16 @@ namespace ASAlloc
             }
             if (!passEquals)
             {
-                MessageBox.Show("Пароли не совпадают");
+                passBox_1.BackColor = Color.LightCoral;
+                passBox_2.BackColor = Color.LightCoral;
+
+                toolTipPassError.ToolTipIcon = ToolTipIcon.Error;
+                toolTipPassError.ToolTipTitle = "Пароль не подтверждён";
+                toolTipPassError.SetToolTip(passBox_1, "Пароли не совпадают");
+                toolTipPassError.SetToolTip(passBox_2, "Пароли не совпадают");
+                toolTipPassError.Active = true;
                 error = true;
-            }
+            } else toolTipPassError.Active = false;
             if (!error)
             {
                 isOkPressed = true;

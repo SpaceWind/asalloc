@@ -65,6 +65,8 @@
             this.placeComboBox = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.sheetView = new System.Windows.Forms.ToolStripButton();
+            this.planView = new System.Windows.Forms.ToolStripButton();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.currentPlaceList = new System.Windows.Forms.DataGridView();
             this.tabMessages = new System.Windows.Forms.TabPage();
@@ -89,6 +91,7 @@
             this.splitContainer2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.toolStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.currentPlaceList)).BeginInit();
             this.contxtTabMenu1.SuspendLayout();
             this.SuspendLayout();
@@ -141,7 +144,6 @@
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel2);
             this.splitContainer1.Size = new System.Drawing.Size(1195, 554);
             this.splitContainer1.SplitterDistance = 186;
-            this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -200,13 +202,13 @@
             this.tableLayoutPanel2.Controls.Add(this.toolStrip1);
             this.tableLayoutPanel2.Controls.Add(this.tabControl1);
             this.tableLayoutPanel2.Controls.Add(this.currentStudentList);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(-1, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1009, 550);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1005, 550);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // toolStrip1
@@ -233,7 +235,7 @@
             this.toolStripButton10});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1009, 35);
+            this.toolStrip1.Size = new System.Drawing.Size(1005, 35);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -414,7 +416,7 @@
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.Padding = new System.Drawing.Point(11, 3);
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1003, 19);
+            this.tabControl1.Size = new System.Drawing.Size(999, 19);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabCtrlFaculty_DrawItem);
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
@@ -432,7 +434,7 @@
             this.currentStudentList.Name = "currentStudentList";
             this.currentStudentList.ReadOnly = true;
             this.currentStudentList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.currentStudentList.Size = new System.Drawing.Size(1003, 484);
+            this.currentStudentList.Size = new System.Drawing.Size(999, 484);
             this.currentStudentList.TabIndex = 2;
             this.currentStudentList.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.currentStudentList_CellMouseRClick);
             // 
@@ -465,7 +467,7 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tableLayoutPanel4);
             this.splitContainer2.Size = new System.Drawing.Size(1195, 550);
-            this.splitContainer2.SplitterDistance = 244;
+            this.splitContainer2.SplitterDistance = 186;
             this.splitContainer2.TabIndex = 0;
             // 
             // tableLayoutPanel3
@@ -483,7 +485,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(242, 550);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(184, 550);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // treePlaces
@@ -493,7 +495,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treePlaces.Location = new System.Drawing.Point(3, 28);
             this.treePlaces.Name = "treePlaces";
-            this.treePlaces.Size = new System.Drawing.Size(236, 519);
+            this.treePlaces.Size = new System.Drawing.Size(178, 519);
             this.treePlaces.TabIndex = 1;
             this.treePlaces.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treePlaces_NodeMouseDoubleClick);
             // 
@@ -510,7 +512,7 @@
             "Все"});
             this.placeComboBox.Location = new System.Drawing.Point(3, 3);
             this.placeComboBox.Name = "placeComboBox";
-            this.placeComboBox.Size = new System.Drawing.Size(236, 21);
+            this.placeComboBox.Size = new System.Drawing.Size(178, 21);
             this.placeComboBox.TabIndex = 0;
             this.placeComboBox.TextChanged += new System.EventHandler(this.tabPlaceFund_Enter);
             // 
@@ -530,16 +532,39 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(947, 550);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(1005, 550);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // toolStrip2
             // 
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sheetView,
+            this.planView});
             this.toolStrip2.Location = new System.Drawing.Point(0, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(947, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(1005, 25);
             this.toolStrip2.TabIndex = 0;
             this.toolStrip2.Text = "toolStrip2";
+            // 
+            // sheetView
+            // 
+            this.sheetView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.sheetView.Image = ((System.Drawing.Image)(resources.GetObject("sheetView.Image")));
+            this.sheetView.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.sheetView.Name = "sheetView";
+            this.sheetView.Size = new System.Drawing.Size(23, 22);
+            this.sheetView.Text = "Табличный вид";
+            this.sheetView.Click += new System.EventHandler(this.sheetView_Click);
+            // 
+            // planView
+            // 
+            this.planView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.planView.Image = ((System.Drawing.Image)(resources.GetObject("planView.Image")));
+            this.planView.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.planView.Name = "planView";
+            this.planView.Size = new System.Drawing.Size(23, 22);
+            this.planView.Text = "План";
+            this.planView.Click += new System.EventHandler(this.planView_Click);
             // 
             // tabControl2
             // 
@@ -551,7 +576,7 @@
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.Padding = new System.Drawing.Point(11, 3);
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(941, 19);
+            this.tabControl2.Size = new System.Drawing.Size(999, 19);
             this.tabControl2.TabIndex = 1;
             this.tabControl2.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabCtrlFaculty_DrawItem);
             this.tabControl2.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl2_Selecting);
@@ -569,7 +594,7 @@
             this.currentPlaceList.Name = "currentPlaceList";
             this.currentPlaceList.ReadOnly = true;
             this.currentPlaceList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.currentPlaceList.Size = new System.Drawing.Size(941, 494);
+            this.currentPlaceList.Size = new System.Drawing.Size(999, 494);
             this.currentPlaceList.TabIndex = 2;
             // 
             // tabMessages
@@ -640,6 +665,8 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.currentPlaceList)).EndInit();
             this.contxtTabMenu1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -690,5 +717,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton toolStripButton10;
         private System.Windows.Forms.ToolStripButton editStudentButton;
+        private System.Windows.Forms.ToolStripButton sheetView;
+        private System.Windows.Forms.ToolStripButton planView;
     }
 }
