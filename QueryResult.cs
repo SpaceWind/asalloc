@@ -277,6 +277,21 @@ namespace ASAlloc
             }
         }
 
+        public void removeDublicates(int columnIndex)
+        {
+            for (int iRow = 0; iRow < getRowCount() - 1; iRow++)
+            {
+                for (int cRow = iRow + 1; cRow < getRowCount(); cRow++)
+                {
+                    if (rows[iRow][columnIndex] == rows[cRow][columnIndex])
+                    {
+                        rows.RemoveAt(cRow);
+                        cRow--;
+                    }
+                }
+            }
+        }
+
         ///private values
         ///
         private List<OrderedDictionary> rows = new List<OrderedDictionary>();

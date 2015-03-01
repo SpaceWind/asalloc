@@ -84,6 +84,12 @@
     <Compile Include="adminMainForm.Designer.cs">
       <DependentUpon>adminMainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="allocatedStudentsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="allocatedStudentsForm.Designer.cs">
+      <DependentUpon>allocatedStudentsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="AllocatingSystem.cs" />
     <Compile Include="Auth.cs">
       <SubType>Form</SubType>
@@ -151,6 +157,12 @@
       <DependentUpon>prorectorMainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="QueryResult.cs" />
+    <Compile Include="SettleLists.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SettleLists.Designer.cs">
+      <DependentUpon>SettleLists.cs</DependentUpon>
+    </Compile>
     <Compile Include="sqlCommandBuilder.cs" />
     <Compile Include="TabDescriptor.cs" />
     <EmbeddedResource Include="addEditUserForm.resx">
@@ -205,6 +217,9 @@
     </Compile>
     <EmbeddedResource Include="prorectorMainForm.resx">
       <DependentUpon>prorectorMainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettleLists.resx">
+      <DependentUpon>SettleLists.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

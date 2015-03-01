@@ -425,6 +425,7 @@ namespace ASAlloc
 
             string tabText;
             string columnOrder;
+            tabDescriptor.tabType tabType = tabDescriptor.tabType.noTab;
 
             bool isPlaceChosen = false;
             if (e.Node.Parent != null)
@@ -444,6 +445,7 @@ namespace ASAlloc
                                                                                  tabTextParts[2], 
                                                                                  columnOrder, objConn).buildCommand());
                     tabText = "C #" + tabTextParts[2] + ":Э #" + tabTextParts[1] + ":Комната #" + tabTextParts[0];
+                    tabType = tabDescriptor.tabType.placeTab;
                 }
                 else
                 {                    
@@ -456,7 +458,11 @@ namespace ASAlloc
                     qr = SqlCommandBuilder.getQueryResult(new GetRoomsRowCommand(Convert.ToInt32(tabTextParts[1]),
                                                                                  Convert.ToInt32(tabTextParts[0]), 
                                                                                  columnOrder, objConn).buildCommand());
+                    qr = SqlCommandBuilder.getQueryResult(new GetRoomsListCommand(Convert.ToInt32(tabTextParts[1]),
+                                                                                 Convert.ToInt32(tabTextParts[0]),
+                                                                                 objConn).buildCommand());
                     tabText = "C #" + tabTextParts[1] + ":Этаж #" + tabTextParts[0];
+                    tabType = tabDescriptor.tabType.floorTab;
                 }
             }
             else 
@@ -466,12 +472,21 @@ namespace ASAlloc
                 qr = SqlCommandBuilder.getQueryResult(new GetRoomsRowCommand(Convert.ToInt32(e.Node.Text.Split(new char[] { '[' }).First().Replace("Строение #", "").Trim()), 
                                                                              columnOrder, objConn).buildCommand());
                 tabText = e.Node.Text.Split(new char[] { '[' }).First().Trim();
+                tabType = tabDescriptor.tabType.corpusTab;
             }
 
             string parserName = isPlaceChosen ? "place" : "room";
             qr.parseColumn(1, mainForm.colNames["place_state"]);
             qr.addToDataGridView(currentPlaceList, mainForm.colNames[parserName]);
-            createNewTab(tabControl2, tabText, qr, tabDescriptor.tabType.placeTab, mainForm.colNames[parserName]);
+            createNewTab(tabControl2, tabText, qr, tabType, mainForm.colNames[parserName]);
+            switch (tabType)
+            {
+                case tabDescriptor.tabType.floorTab:
+                    currentPlaceList.Columns[0].Visible = false;
+                    currentPlaceList.Columns[1].Visible = false;
+                    break;
+                default: break;
+            }
             //-------------------------------------------------------------------------------------------------------------------
             objConn.Close();
         }
@@ -484,6 +499,15 @@ namespace ASAlloc
                 QueryResult qr = tabs[e.TabPage.Name].qr;
                 if (qr != null)
                     qr.addToDataGridView(currentPlaceList,tabs[e.TabPage.Name].columnNameParser);
+                switch (tabs[e.TabPage.Name].type_) 
+                {
+                    case tabDescriptor.tabType.floorTab:
+                        currentPlaceList.Columns[0].Visible = false;
+                        currentPlaceList.Columns[1].Visible = false;
+                        if (!planView.Enabled) showPlacesPlan(tabs[e.TabPage.Name].qr, tabDescriptor.tabType.floorTab);
+                        break;
+                    default: break;
+                }
             }
         }
 
@@ -945,15 +969,31 @@ namespace ASAlloc
             objConn.Close();
         }
 
+        private void showPlacesPlan(QueryResult qr, tabDescriptor.tabType pageType)
+        {
+            if (tabControl2.TabPages.Count == 0)
+            {
+                return;
+            }
+
+            switch(pageType)
+            {
+                case tabDescriptor.tabType.floorTab:
+                    placesPlan.openPlan(qr, Convert.ToInt32(pageType));
+                    placesPlan.render();
+                    placesPlan.Show();
+                    break;
+                default: break;
+            }
+        }
+
         private void planView_Click(object sender, EventArgs e)
         {
             currentPlaceList.Hide();
-            placesPlan.Show();
-
             planView.Enabled = false;
             sheetView.Enabled = true;
 
-            ((PictureBox)placesPlan.Controls.Find("pictureBox1", true).First()).Image = Image.FromFile("1301916447365.bmp");
+            showPlacesPlan(tabs[tabControl2.SelectedTab.Name].qr, tabs[tabControl2.SelectedTab.Name].type_);
         }
 
         private void sheetView_Click(object sender, EventArgs e)

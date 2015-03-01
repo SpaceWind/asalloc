@@ -21,7 +21,11 @@ namespace ASAlloc
             violatorsListTab = 7, 
             orderListTab = 8,
             editablePlaceTab = 9,
-            placeTab = 10
+            placeTab = 10,
+            editableFloorTab = 11,
+            floorTab = 12,
+            editableCorpusTab = 13,
+            corpusTab = 14
         }
         public class columnParserDescriptor
         {

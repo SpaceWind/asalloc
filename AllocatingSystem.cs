@@ -73,14 +73,16 @@ namespace ASAlloc
         }
         public bool isStudentAddingLegal(studentDescriptor student)
         {
+            if (currentPlaces >= maxPlaces)
+                return false;
             bool sameYosInRoom = (maxYos - minYos == 2);
-            if ((student.yos == minYos) && (currentPlaces < maxPlaces))
+            if (student.yos == minYos)
             {
                 if (!checkGenderComp(student))
                     return false;
                 return true;
             }
-            else if ((student.yos == maxYos) && (currentPlaces < maxPlaces))
+            else if (student.yos == maxYos)
             {
                 if (!checkGenderComp(student))
                     return false;
@@ -92,14 +94,7 @@ namespace ASAlloc
                     return false;
                 return true;
             }
-            else if (currentPlaces < maxPlaces)
-            {
-                if (!checkGenderComp(student))
-                    return false;
-                return true;
-            }
             return false;
-
         }
         public bool addStudent(studentDescriptor student)
         {
@@ -153,7 +148,7 @@ namespace ASAlloc
             return false;
         }
     }
-    class studentDescriptor : IComparable
+    public class studentDescriptor : IComparable
     {
         int IComparable.CompareTo(object obj)
         {
@@ -191,7 +186,6 @@ namespace ASAlloc
             rBook = rBook_;
             prevPlaceId = prevPlace;
             place = 0;
-            findViolationCount();
         }
         public studentDescriptor(studentDescriptor src)
         {
@@ -254,9 +248,9 @@ namespace ASAlloc
             List<studentDescriptor> students = new List<studentDescriptor>();
             for (int i = 0; i < qr.getRowCount(); i++)
             {
-                string rBook = qr.getValue(i, 0);
+                string rBook = qr.getValue(i, 0).Trim();
                 string strPrevPlace = qr.getValue(i,1);
-                int place = (strPrevPlace == null)?0:Convert.ToInt32(strPrevPlace);
+                int place = (strPrevPlace == "")?0:Convert.ToInt32(strPrevPlace);
                 
                 var student = new studentDescriptor(rBook, place);
                 string rangeStr = qr.getValue(i, 2);
@@ -268,6 +262,7 @@ namespace ASAlloc
                 student.yos = Convert.ToInt32(qr.getValue(i, 4));
                 string genderStr = qr.getValue(i, 5);
                 student.gender = (genderStr == "True");
+                student.violationCount = Convert.ToInt32(qr.getValue(i, 7));
                 students.Add(student);
             }
             objConn.Close();
@@ -299,7 +294,7 @@ namespace ASAlloc
             List<studentDescriptor> notAllowed = new List<studentDescriptor>();
 
             foreach (studentDescriptor student in allStudents)
-                if (student.violationCount > 2)
+                if (student.violationCount >= 2)
                     notAllowed.Add(student);
                 else
                     allowed.Add(student);
@@ -445,7 +440,7 @@ namespace ASAlloc
             result.primaryList = new List<studentDescriptor>();
             foreach (studentDescriptor student in allStudents)
             {
-                result.slaveList = allStudents;
+                result.slaveList = new List<studentDescriptor>(allStudents);
                 List<studentDescriptor> currentGroup = new List<studentDescriptor>();
                 List<int> yosAllowed = new List<int>();
                 yosAllowed = updateYosAllowed(yosAllowed, student.yos);
@@ -526,20 +521,7 @@ namespace ASAlloc
             }
             //2. Заселить как можно больше новых студентов в комнаты со старыми студентами
             studentsToAllocate = newStudents;
-            foreach (studentDescriptor student in studentsToAllocate)
-            {
-                bool isStudentAllocated = false;
-                foreach (roomDescriptor room in oldStudentRooms)
-                {
-                    
-                    if (room.isStudentAddingLegal(student))
-                        isStudentAllocated = settle(room,student,roomsToPlaceMap);
-                }
-                if (!isStudentAllocated)
-                    restOfStudents.Add(student);
-            }
-            //3. Найти и отсортировать комнаты по размеру.
-            studentsToAllocate = restOfStudents;
+
             var emptyRooms = findEmptyRooms(allRooms);
             emptyRooms.Sort();
             emptyRooms.Reverse();
@@ -559,7 +541,7 @@ namespace ASAlloc
                     doubleStudentList studentGroup = FindStudentGroup(studentsToAllocate, currentRoomSize);
                     if (studentGroup.primaryList.Count != 0)
                     {
-                        room.currentPlaces += studentGroup.primaryList.Count;
+                        //room.currentPlaces += studentGroup.primaryList.Count;
                         foreach (studentDescriptor settleStudent in studentGroup.primaryList)
                         {
                             settle(room, settleStudent, roomsToPlaceMap);
@@ -570,6 +552,23 @@ namespace ASAlloc
                 if (!AtLeastOneRoomValid)
                     break;
             }
+
+
+            foreach (studentDescriptor student in studentsToAllocate)
+            {
+                bool isStudentAllocated = false;
+                foreach (roomDescriptor room in oldStudentRooms)
+                {
+                    
+                    if (room.isStudentAddingLegal(student))
+                        isStudentAllocated = settle(room,student,roomsToPlaceMap);
+                }
+                if (!isStudentAllocated)
+                    restOfStudents.Add(student);
+            }
+            //3. Найти и отсортировать комнаты по размеру.
+            studentsToAllocate = restOfStudents;
+            
 
             //5. Заселсяем всех оставшихся студентов в комнаты с ошибками.
             List<roomDescriptor> sortedRooms = new List<roomDescriptor>();
@@ -594,7 +593,7 @@ namespace ASAlloc
                 student = studentsToAllocate.First();
                 allRoomsOccupated = true;
                 foreach (roomDescriptor room in sortedRooms)
-                    if (room.currentPlaces != room.maxPlaces)
+                    if (room.currentPlaces < room.maxPlaces)
                     {
                         allRoomsOccupated = false;
                         settle(room, student, roomsToPlaceMap);
@@ -604,7 +603,14 @@ namespace ASAlloc
             }
             deniedStudents.AddRange(studentsToAllocate);
 
-
+            SettleLists sl = new SettleLists(allocatedStudents, deniedStudents);
+            sl.Name = "sl";
+            allocatedStudentsForm form = new allocatedStudentsForm();
+            form.Controls.Add(sl);
+            form.Controls.Find("sl", true).First().Dock = System.Windows.Forms.DockStyle.Fill;
+            form.Controls.Find("sl", true).First().Show();
+            form.Show();
+            
         }
         List<roomDescriptor> findEmptyRooms(List<roomDescriptor> allRooms)
         {
@@ -613,10 +619,7 @@ namespace ASAlloc
                 if (room.currentPlaces == 0)
                     result.Add(room);
             return result;
-        }
-        
-
-        
+        }      
 
     }
 }

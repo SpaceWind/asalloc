@@ -136,6 +136,10 @@ namespace ASAlloc
         }
         private string faculty_;
     }
+
+
+
+
     class GetResidentsInfoCommand : SqlCommandBuilder
     {
         public GetResidentsInfoCommand(string faculty, SqlConnection connection)
@@ -145,7 +149,29 @@ namespace ASAlloc
         }
         public override SqlCommand buildCommand()
         {
-            string sql = "declare @lastOrderDate smalldatetime; " +
+            string sql = "declare @idList int;" +
+                         "select @idList = Orders.idList from Orders where Orders.date = " +
+                            "(select MAX(Orders.date) from Orders where Orders.type = 'False') " +
+                         "select Student.rbook, RT_Student_Lists.place, Student.accomm_range, Student.budget, " +
+                            "Student.yos, Student.gender, " +
+                            "(select SUM(Primary_Benefit.priority) " +
+                                "from RT_Student_Benefit " +
+                                "full join Primary_Benefit on Primary_Benefit.id = RT_Student_Benefit.benefit " +
+                                "where RT_Student_Benefit.student = Student.id) " +
+                            "as 'benefitCoef', " +
+                            "(select COUNT(Offense.id) " +
+                                "from Offense " +
+                                "where Offense.idList in " +
+                                "(select RT_Student_Lists.idList from RT_Student_Lists " +
+                                    "where RT_Student_Lists.student = Student.id " +
+                                ") " +
+                            ") " +
+                            "as 'offenses' " +
+                         "from Student " +
+                         "full join RT_Student_Lists on RT_Student_Lists.student = Student.id and RT_Student_Lists.idList = @idList " +
+                         "where Student.faculty = '" + faculty_ + "'";
+
+                         /*"declare @lastOrderDate smalldatetime; " +
                          "select @lastOrderDate = MAX(Orders.date) from Orders where type = 'False' " +
                          "select Student.rbook, RT_Student_Lists.place, Student.accomm_range, Student.budget, " +
                          "Student.yos, Student.gender, (select SUM(Primary_Benefit.priority) " + 
@@ -156,7 +182,7 @@ namespace ASAlloc
                          "inner join Student on Student.id = RT_Student_Lists.student and Student.faculty = '" + faculty_ +"' " +
                          "where RT_Student_Lists.idList = " +
                          "(select Orders.idList from Orders where date = @lastOrderDate)";
-                          /*
+                          
                           "select Student.rbook, RT_Student_Lists.place, Student.accomm_range, Student.budget, " + 
                           "(select SUM(Primary_Benefit.priority), Student.yos, Student.gender from RT_Student_Benefit " +
                           "full join Primary_Benefit on Primary_Benefit.id = RT_Student_Benefit.benefit " +
@@ -395,6 +421,30 @@ namespace ASAlloc
         private string value;
         private string order_ = "*";
         private string joins_ = "";
+    }
+    class GetRoomsListCommand : SqlCommandBuilder
+    {         
+        public GetRoomsListCommand(int building, int floor, SqlConnection connection)
+        {
+            conn = connection;
+            building_ = building;
+            floor_ = floor;
+        }        
+        public override SqlCommand buildCommand()
+        {
+            string sql = "SELECT Floor.corpus, Floor.floor_level, Room.id as 'id', Room.number as '№ комнаты'," +
+                        "(select Place.owner from Place where Place.id = " + 
+                        "(select MIN(Place.id) from Place where Place.room = Room.id AND Place.owner <> 'Проректор')) as 'Владелец'," +
+                        "Room.type as 'Тип', Room.max_places as 'Макс.Мест'," +
+                        "(select COUNT(Place.id) from Place where Place.room = Room.id) as 'Мест'," +
+                        "(select COUNT(Place.id) from Place where Place.room = Room.id and Place.state = 0) as 'Мест свободно' from Room " +
+                        "full join Floor on Floor.id = Room.floor " +
+                        "WHERE Room.floor = (SELECT Floor.id FROM Floor WHERE Floor.floor_level = '" +
+                        (floor_).ToString() + "' AND corpus = '" + (building_).ToString() + "')";               
+            return new SqlCommand(sql, conn);
+        }
+        private int building_;
+        private int floor_;
     }
     class GetRoomsRowCommand : SqlCommandBuilder
     {

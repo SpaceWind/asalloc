@@ -41,3 +41,4 @@ D:\visual studio 2013\Projects\asalloc\obj\Debug\ASAlloc.Properties.Resources.re
 D:\visual studio 2013\Projects\asalloc\obj\Debug\ASAlloc.prorectorMainForm.resources
 D:\visual studio 2013\Projects\asalloc\obj\Debug\ASAlloc.csproj.GenerateResource.Cache
 D:\visual studio 2013\Projects\asalloc\obj\Debug\ASAlloc.PlaceFundPlan.resources
+D:\visual studio 2013\Projects\asalloc\obj\Debug\ASAlloc.SettleLists.resources
